@@ -7,9 +7,12 @@
 #include <miniz.h>
 
 #include "logwriter.hpp"
+#include "svifile.hpp"
 
 class SaveFile : public LogWriter {
     private:
+        friend class SVIFile;
+
         #ifdef EMULATOR
         static const std::string DEFAULT_SAVEPATH;
         #else

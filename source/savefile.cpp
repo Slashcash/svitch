@@ -154,7 +154,8 @@ void SaveFile::getSaveFileInformationFromHeader(std::stringstream& theStringStre
     //searching for the id in the header
     element_pos = theStringStream.str().find(HEADER_ID_STR);
     if( element_pos == std::string::npos ) {
-        writeToLog("Unable to find a valid id in the header", LogWriter::WARNING);
+        OPResult op_res(ERR_INVALID_SAVEHEADER);
+        writeToLog(op_res, LogWriter::WARNING);
         title_id = 0;
     }
 
@@ -173,10 +174,13 @@ void SaveFile::getSaveFileInformationFromHeader(std::stringstream& theStringStre
         if( newline_pos == std::string::npos ) value_length = std::string::npos;
         else value_length = newline_pos - element_pos - HEADER_NAME_STR.size() - HEADER_SEPARATOR.size() - 1;
         title_name = theStringStream.str().substr(value_pos, value_length);
-        std::ostringstream test;
     }
 
-    else { writeToLog("Unable to find a valid name in the header", LogWriter::WARNING); title_name = UNKNOWN_PARAMETER_STR; }
+    else {
+        OPResult op_res(ERR_INVALID_SAVEHEADER);
+        writeToLog(op_res, LogWriter::WARNING);
+        title_name = UNKNOWN_PARAMETER_STR;
+    }
 
     //searching for the author in the header
     element_pos = theStringStream.str().find(HEADER_AUTHOR_STR);
@@ -188,7 +192,11 @@ void SaveFile::getSaveFileInformationFromHeader(std::stringstream& theStringStre
         title_author = theStringStream.str().substr(value_pos, value_length);
     }
 
-    else { writeToLog("Unable to find a valid author in the header", LogWriter::WARNING); title_name = UNKNOWN_PARAMETER_STR; }
+    else {
+        OPResult op_res(ERR_INVALID_SAVEHEADER);
+        writeToLog(op_res, LogWriter::WARNING);
+        title_author = UNKNOWN_PARAMETER_STR;
+    }
 }
 #endif
 

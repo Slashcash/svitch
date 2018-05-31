@@ -11,6 +11,7 @@ enum Error { //all the things that can go wrong in this software
     ERR_OUTSIZE_TOO_SMALL,
     ERR_OPEN_STREAM,
     ERR_INVALID_SAVEHEADER,
+    ERR_NO_SAVEHEADER,
     ERR_OPEN_ITERATOR,
     ERR_READ_ITERATOR,
     ERR_TOO_MANY_SAVEFILES,
@@ -53,8 +54,6 @@ class OPResult {
         void setLibNXErrorNumber(const unsigned int theLibNXErrorNumber) { err_number_libnx = theLibNXErrorNumber; }
 
         operator bool() { return !err_number; }
-
-
 };
 
 #endif // _OPRESULT_HPP_
