@@ -36,5 +36,5 @@ Svitch is still under **HEAVY TESTING**. As of now a lot of things can go wrong 
 ## Disclaimer
 Svitch *will* operate on your save file partition, as of now it just reads it (without writing to it) but it is a dangerous operation in any way. It may result in lost or damaged savefiles. For this reason i suggest you to backup your saves with another tool before trying this, this is still in **TESTING** 
 
-#How can i download this?
+# How can i download this?
 As of now the official Svitch's download location is its Github Release page.
