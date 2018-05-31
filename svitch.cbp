@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="svitch" />
+		<Option makefile_is_custom="1" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<MakeCommands>
+			<Build command="$make -f $makefile" />
+			<CompileFile command="$make -f $makefile $file" />
+			<Clean command="$make -f $makefile clean" />
+			<DistClean command="$make -f $makefile distclean$target" />
+			<AskRebuildNeeded command="$make -q -f $makefile" />
+			<SilentBuild command="$make -f $makefile &gt; $(CMD_NULL)" />
+		</MakeCommands>
+		<Build>
+			<Target title="Release">
+				<Option output="./svitch" prefix_auto="1" extension_auto="1" />
+				<Option object_output="build/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+				<MakeCommands>
+					<Build command="$make -f $makefile" />
+					<CompileFile command="$make -f $makefile $file" />
+					<Clean command="$make -f $makefile clean" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="$make -q -f $makefile" />
+					<SilentBuild command="$make -f $makefile &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Target title="Emulator">
+				<Option output="./svitch" prefix_auto="1" extension_auto="1" />
+				<Option object_output="build/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+				<MakeCommands>
+					<Build command="$make -f $makefile EMULATOR=1" />
+					<CompileFile command="$make -f $makefile $file EMULATOR=1" />
+					<Clean command="$make -f $makefile clean" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="$make -q -f $makefile EMULATOR=1" />
+					<SilentBuild command="$make -f $makefile EMULATOR=1 &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="Makefile" />
+		<Unit filename="include/color.hpp" />
+		<Unit filename="include/drawable.hpp" />
+		<Unit filename="include/font.hpp" />
+		<Unit filename="include/gui.hpp" />
+		<Unit filename="include/inputevent.hpp" />
+		<Unit filename="include/langfile.hpp" />
+		<Unit filename="include/layer.hpp" />
+		<Unit filename="include/loadable.hpp" />
+		<Unit filename="include/loadablemanager.hpp" />
+		<Unit filename="include/logwriter.hpp" />
+		<Unit filename="include/mainstate.hpp" />
+		<Unit filename="include/node.hpp" />
+		<Unit filename="include/observer.hpp" />
+		<Unit filename="include/opresult.hpp" />
+		<Unit filename="include/options.hpp" />
+		<Unit filename="include/resultstate.hpp" />
+		<Unit filename="include/savefile.hpp" />
+		<Unit filename="include/scene.hpp" />
+		<Unit filename="include/signal.hpp" />
+		<Unit filename="include/signaler.hpp" />
+		<Unit filename="include/state.hpp" />
+		<Unit filename="include/text.hpp" />
+		<Unit filename="include/transformation.hpp" />
+		<Unit filename="include/vector2.hpp" />
+		<Unit filename="include/window.hpp" />
+		<Unit filename="source/color.cpp" />
+		<Unit filename="source/font.cpp" />
+		<Unit filename="source/gui.cpp" />
+		<Unit filename="source/inputevent.cpp" />
+		<Unit filename="source/langfile.cpp" />
+		<Unit filename="source/layer.cpp" />
+		<Unit filename="source/logwriter.cpp" />
+		<Unit filename="source/main.cpp" />
+		<Unit filename="source/mainstate.cpp" />
+		<Unit filename="source/node.cpp" />
+		<Unit filename="source/observer.cpp" />
+		<Unit filename="source/opresult.cpp" />
+		<Unit filename="source/options.cpp" />
+		<Unit filename="source/resultstate.cpp" />
+		<Unit filename="source/savefile.cpp" />
+		<Unit filename="source/scene.cpp" />
+		<Unit filename="source/signal.cpp" />
+		<Unit filename="source/signaler.cpp" />
+		<Unit filename="source/state.cpp" />
+		<Unit filename="source/text.cpp" />
+		<Unit filename="source/transformation.cpp" />
+		<Unit filename="source/window.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
