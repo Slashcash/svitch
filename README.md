@@ -11,9 +11,9 @@ Svitch will soon have a properly functioning importing function to reimport back
 
 ## How can i use it?
 Just launch it as every other Nintendo Switch's homebrew, you can control it with:
-..* +/- scrolls through all the savefiles
-..*Y exports the savefile
-..* B exits the software
+⋅⋅* +/- scrolls through all the savefiles.
+⋅⋅*Y exports the savefile.
+⋅⋅* B exits the software.
 
 ## Can i compile Svitch from source?
 You are encouraged to do so, the *master* branch provides a convenient Makefile, just clone the repository and launch a make. It also provides a Code::Blocks .cbp file if you like it. You will need:
@@ -22,9 +22,9 @@ You are encouraged to do so, the *master* branch provides a convenient Makefile,
 
 ## Can i help?
 Of course you can! I appreciate external helping, you can provide help by
-..* Reviewing and improving the source code, you are encouraged to fork and request
-..* Testing the software intensively to search for bugs
-..* **Help me designing the UI:** i will soon need some graphical elements for the gui. Icons, buttons, some basic ui elements. And i'm not confident with graphics. If you do you can contact me.
+⋅⋅* Reviewing and improving the source code, you are encouraged to fork and request.
+⋅⋅* Testing the software intensively to search for bugs.
+⋅⋅* **Help me designing the UI:** i will soon need some graphical elements for the gui. Icons, buttons, some basic ui elements. And i'm not confident with graphics. If you do you can contact me.
 
 ## Can i test this on an emulator?
 Although Nintendo Switch emulator currently exists they don't have savefiles support yet and they tend to crash when requesting a savefile. But luckily enough you can compile a version of Svitch that will succesfully launch in an emulator.
