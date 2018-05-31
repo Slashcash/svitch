@@ -5,6 +5,7 @@
 #include <dirent.h>
 #else
 #include <switch.h>
+#include <unistd.h>
 #endif
 #include <sstream>
 #include <fstream>
@@ -351,6 +352,180 @@ OPResult SaveFile::unmount() {
 }
 #endif
 
+#ifndef EMULATOR
+OPResult SaveFile::commit() {
+    writeToLog("committing "+mount_name);
+    Result res = fsdevCommitDevice(mount_name.c_str());
+    if( R_FAILED(res) ) {
+        OPResult op_res(ERR_COMMIT_SAVEDATA, R_DESCRIPTION(res));
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    return OPResult(OPResult::SUCCESS);
+}
+#endif
+
+OPResult SaveFile::wipePath(const std::string& thePath) {
+    OPResult op_res = wipeFiles(thePath);
+    if( !op_res ) return op_res;
+
+    op_res = wipeFolders(thePath);
+    if( !op_res ) return op_res;
+
+    return OPResult(OPResult::SUCCESS);
+}
+
+OPResult SaveFile::wipeFiles(const std::string& thePath) {
+    std::ostringstream initial_stream;
+    initial_stream << "Wiping away files at " << thePath;
+    writeToLog(initial_stream.str());
+
+    //just deleting files
+    DIR* d = opendir(thePath.c_str()); // open the path
+    if( d == NULL ) {
+        OPResult op_res(ERR_OPEN_ITERATOR);
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    dirent* dir; // for the directory entries
+
+    //just deleting files
+    OPResult op_res;
+    while ((dir = readdir(d)) != NULL) {
+        if( dir->d_type == DT_DIR )
+            if( !(op_res = wipeFiles(thePath+"/"+std::string(dir->d_name))) )
+                return op_res;
+
+        if(dir->d_type == DT_REG) {
+            #ifndef EMULATOR //yuzu currently crashes on remove
+            writeToLog("Removing "+thePath+"/"+std::string(dir->d_name));
+            if( remove((thePath+"/"+std::string(dir->d_name)).c_str()) != 0 ) {
+                OPResult op_res(ERR_DELETE_FILE);
+                writeToLog(op_res);
+                closedir(d);
+                return op_res;
+
+            }
+            #else
+            if( DEFAULT_SAVEHEADER_NAME != dir->d_name )
+                writeToLog("Removing "+thePath+"/"+std::string(dir->d_name));
+            #endif
+        }
+    }
+
+    closedir(d);
+    return OPResult(OPResult::SUCCESS);
+}
+
+OPResult SaveFile::wipeFolders(const std::string& thePath) {
+    std::ostringstream initial_stream;
+    initial_stream << "Wiping away folder at " << thePath;
+    writeToLog(initial_stream.str());
+
+    //just deleting folders
+    DIR* d = opendir(thePath.c_str()); // open the path
+    if( d == NULL ) { // if was not able return
+        OPResult op_res(ERR_OPEN_ITERATOR);
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    dirent* dir; // for the directory entries
+
+    //just deleting folders
+    Result op_res;
+
+    while((dir = readdir(d)) != NULL) {
+        if( dir->d_type == DT_DIR ) {
+            if( !(op_res = wipeFolders(thePath+"/"+std::string(dir->d_name))) )
+                return op_res;
+        }
+    }
+
+    writeToLog("Removing "+thePath+"/"+std::string(dir->d_name));
+    #ifndef EMULATOR
+    if( rmdir(thePath.c_str()) != 0 ) {
+        OPResult op_res(ERR_DELETE_FOLDER);
+        writeToLog(op_res);
+        closedir(d);
+        return op_res;
+    }
+    #endif
+    closedir(d);
+    return OPResult(OPResult::SUCCESS);
+}
+
+OPResult SaveFile::extractSVIToPath(const std::string& theSVIPath, const std::string& theDestinationPath) {
+    std::ostringstream initial_stream;
+    initial_stream << "Extracting " << theSVIPath << " to " << theDestinationPath;
+
+    writeToLog("Initializing the archive");
+    //initializing an archive
+    mz_zip_archive archive;
+    mz_zip_zero_struct(&archive);
+    if( !mz_zip_reader_init_file(&archive, theSVIPath.c_str(), 0) ) {
+        OPResult op_res(ERR_INIT_ARCHIVE);
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    unsigned int file_num = mz_zip_reader_get_num_files(&archive);
+
+    //scrolling through it
+    for(unsigned int i = 0; i < file_num; i++) {
+        mz_zip_reader_extract_iter_state* it = mz_zip_reader_extract_iter_new(&archive, i, 0); //creating the iterator
+        const int MAX_FILE_SIZE = 2*10^7; //hoping that 20mb will always be enough (?)
+        char* file_buffer = new char[MAX_FILE_SIZE];
+        size_t file_size = mz_zip_reader_extract_iter_read(it, file_buffer, MAX_FILE_SIZE); //reading the file
+
+        //if it is a directory we create it
+        if( it->file_stat.m_is_directory ) {
+            std::ostringstream dir_stream;
+            dir_stream << "Creating " << theDestinationPath+it->file_stat.m_filename;
+            if( mkdir((theDestinationPath+it->file_stat.m_filename).c_str(), 0x777) != 0 ) {
+                OPResult op_res(ERR_CREATE_DIRECTORY);
+                writeToLog(op_res);
+                delete [] file_buffer;
+                mz_zip_reader_extract_iter_free(it);
+                return op_res;
+            }
+        }
+
+        //if it is a file we write it to disk
+        else {
+            if( std::string(it->file_stat.m_filename) != DEFAULT_SAVEHEADER_NAME ) {
+                writeToLog("Writing file "+theDestinationPath+it->file_stat.m_filename);
+                std::ofstream stream((theDestinationPath+it->file_stat.m_filename).c_str(), std::ios::out | std::ios::binary);
+                    if( !stream.is_open() ) {
+                        OPResult op_res(ERR_OPEN_STREAM);
+                        writeToLog(op_res);
+                        delete [] file_buffer;
+                        mz_zip_reader_extract_iter_free(it);
+                        return op_res;
+                    }
+
+                    stream.write(file_buffer, file_size);
+                    if( !stream.good() ) {
+                        OPResult op_res(ERR_WRITE_FILE);
+                        writeToLog(op_res);
+                        delete [] file_buffer;
+                        mz_zip_reader_extract_iter_free(it);
+                        return op_res;
+                    }
+                }
+            }
+
+            delete [] file_buffer;
+            mz_zip_reader_extract_iter_free(it);
+        }
+
+        mz_zip_end(&archive);
+        return OPResult(OPResult::SUCCESS);
+}
+
+
 OPResult SaveFile::extractToSVIFile(const std::string& theSVIPath) {
     std::ostringstream initial_stream;
     initial_stream << "Starting the SVI extraction process for " << std::hex << title_id << " to " << theSVIPath;
@@ -508,5 +683,68 @@ OPResult SaveFile::extractPathToSVI(mz_zip_archive& theArchive, const std::strin
 
     closedir(d);
     return OPResult(OPResult::SUCCESS);
+}
 
+OPResult SaveFile::importFromSVIFile(const SVIFile& theSVIFile) {
+    std::ostringstream initial_stream;
+    initial_stream << "Starting an import operation for " << std::hex << title_id << " from " << theSVIFile.getPath();
+
+    OPResult op_res;
+
+    //just a fast check on the SVI file
+    if( !theSVIFile.isValid() ) {
+        OPResult op_res(ERR_INVALID_SVI);
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    #ifndef EMULATOR
+    //mounting the savefile
+    op_res = mount(DEFAULT_MOUNTNAME);
+    if( !op_res ) return op_res;
+    #endif
+
+    std::string mount_point;
+    #ifndef EMULATOR
+    mount_point = mount_name + ":/";
+    #else
+    mount_point = folder_path;
+    #endif
+
+    //wiping the save out
+    op_res = wipePath(mount_point);
+    if( !op_res ) {
+        #ifndef EMULATOR
+        unmount();
+        #endif
+        return op_res;
+    }
+
+    //actually importing the save
+    op_res = extractSVIToPath(theSVIFile.getPath(), mount_point);
+    if( !op_res ) {
+        #ifndef EMULATOR
+        unmount();
+        #endif
+        return op_res;
+    }
+
+    #ifndef EMULATOR
+    //committing the save
+    op_res = commit();
+    if( !op_res ) {
+        unmount();
+        return op_res;
+    }
+
+    //unmounting the save
+    op_res = unmount();
+    if( !op_res ) {
+        unmount();
+        return op_res;
+    }
+    #endif
+
+    writeToLog("Import operation SUCCESS");
+    return OPResult(OPResult::SUCCESS);
 }

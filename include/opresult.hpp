@@ -21,6 +21,7 @@ enum Error { //all the things that can go wrong in this software
     ERR_MOUNT_SAVEDATA,
     ERR_MOUNT_DEVICE,
     ERR_UNMOUNT_SAVEDATA,
+    ERR_COMMIT_SAVEDATA,
     ERR_INIT_ARCHIVE,
     ERR_WRITE_ARCHIVE_HEADER,
     ERR_CREATE_ARCHIVE_DIRECTORY,
@@ -33,7 +34,11 @@ enum Error { //all the things that can go wrong in this software
     ERR_LOAD_FONT_FACE,
     ERR_FONT_NOT_LOADED,
     ERR_SET_FONT_SIZE,
-    ERR_PARSE_FILE
+    ERR_PARSE_FILE,
+    ERR_DELETE_FILE,
+    ERR_INVALID_SVI,
+    ERR_DELETE_FOLDER,
+    ERR_CREATE_DIRECTORY
 };
 
 class OPResult {

@@ -48,10 +48,15 @@ class SaveFile : public LogWriter {
         #else
         OPResult mount(const std::string& theMountName);
         OPResult unmount();
+        OPResult commit();
         #endif
         void getSaveFileInformation(); //this retrieves the savefile name and author from system
         std::ostringstream createSaveHeader() const;
+        OPResult wipePath(const std::string& thePath);
+        OPResult wipeFiles(const std::string& thePath);
+        OPResult wipeFolders(const std::string& thePath);
         OPResult extractPathToSVI(mz_zip_archive& theArchive, const std::string& theSourcePath, const std::string& theIterator = "") const;
+        OPResult extractSVIToPath(const std::string& theSVIPath, const std::string& theDestinationPath);
 
 
         public:
@@ -61,6 +66,7 @@ class SaveFile : public LogWriter {
 
             static std::vector<SaveFile> getAllSaveFiles(); //gets all the savefiles found on the system
             OPResult extractToSVIFile(const std::string& theSVIPath);
+            OPResult importFromSVIFile(const SVIFile& theSVIFile);
 };
 
 #endif // _SAVEFILE_HPP_
