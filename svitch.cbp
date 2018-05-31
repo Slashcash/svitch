@@ -64,6 +64,7 @@
 		<Unit filename="include/drawable.hpp" />
 		<Unit filename="include/font.hpp" />
 		<Unit filename="include/gui.hpp" />
+		<Unit filename="include/importstate.hpp" />
 		<Unit filename="include/inputevent.hpp" />
 		<Unit filename="include/langfile.hpp" />
 		<Unit filename="include/layer.hpp" />
@@ -89,6 +90,7 @@
 		<Unit filename="source/color.cpp" />
 		<Unit filename="source/font.cpp" />
 		<Unit filename="source/gui.cpp" />
+		<Unit filename="source/importstate.cpp" />
 		<Unit filename="source/inputevent.cpp" />
 		<Unit filename="source/langfile.cpp" />
 		<Unit filename="source/layer.cpp" />

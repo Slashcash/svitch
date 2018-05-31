@@ -26,7 +26,7 @@ class MainState : public State {
 
         void buildTitleInfo();
         void export_svi();
-        //void import_svi();
+        void import_svi();
 
     public:
         MainState();

@@ -8,11 +8,13 @@
 #include "options.cpp"
 #include "langfile.hpp"
 #include "resultstate.hpp"
-//#include "importstate.hpp"
+#include "importstate.hpp"
 
 MainState::MainState() {
     //creating the dirs
     mkdir(EXPORT_PATH.c_str(), 0x777);
+    mkdir(BACKUP_PATH.c_str(), 0x777);
+    mkdir(IMPORT_PATH.c_str(), 0x777);
 
     //variable initialization
     save_selected = 0;
@@ -38,13 +40,12 @@ MainState::MainState() {
 
     import_info.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
     import_info.setMsg(LangFile::getInstance()->getValue("press_x_import"));
-    //export_info.attachChild(&import_info); //decomment this out when implementing the import function
+    export_info.attachChild(&import_info);
     import_info.setPosition(0, export_info.getSize().y + 10);
 
     exit_info.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
     exit_info.setMsg(LangFile::getInstance()->getValue("press_b_exit"));
-    //import_info.attachChild(&exit_info);
-    export_info.attachChild(&exit_info); //comment this out and decomment the line before this when implementing the import function
+    import_info.attachChild(&exit_info);
     exit_info.setPosition(0, import_info.getSize().y + 10);
 
     app_title.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
@@ -112,7 +113,7 @@ void MainState::onNotify(const Signal& theSignal) {
     if( theSignal.getName() == "SCROLL_LEFT" ) { save_selected--; buildTitleInfo(); }
 
     if( theSignal.getName() == "EXPORT" ) export_svi();
-    //if( theSignal.getName() == "IMPORT" ) import_svi();
+    if( theSignal.getName() == "IMPORT" ) import_svi();
 }
 
 void MainState::export_svi() {
@@ -129,7 +130,7 @@ void MainState::export_svi() {
     Gui::getInstance()->addState(res_state);
 }
 
-/*void MainState::import_svi() {
-    ImportState* import_state = new ImportState(gui_ptr, savefiles[save_selected]);
-    gui_ptr->addState(import_state);
-}*/
+void MainState::import_svi() {
+    ImportState* import_state = new ImportState(savefiles[save_selected]);
+    Gui::getInstance()->addState(import_state);
+}
