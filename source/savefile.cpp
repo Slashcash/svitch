@@ -366,6 +366,7 @@ OPResult SaveFile::commit() {
 }
 #endif
 
+//this function is an actual MESS because i am apparently unable to write a good recursive wipe function (don't bother with me, i am the worst)
 OPResult SaveFile::wipePath(const std::string& thePath) {
     DIR* d = opendir(thePath.c_str()); // open the path
     if( d == NULL ) {
@@ -384,6 +385,22 @@ OPResult SaveFile::wipePath(const std::string& thePath) {
 
             op_res = wipeFolders(thePath+"/"+dir->d_name);
             if( !op_res ) return op_res;
+        }
+
+        if(dir->d_type == DT_REG) {
+            #ifndef EMULATOR //yuzu currently crashes on remove
+            writeToLog("Removing file "+thePath+"/"+std::string(dir->d_name));
+            if( remove((thePath+"/"+std::string(dir->d_name)).c_str()) != 0 ) {
+                OPResult op_res(ERR_DELETE_FILE);
+                writeToLog(op_res);
+                closedir(d);
+                return op_res;
+
+            }
+            #else
+            if( DEFAULT_SAVEHEADER_NAME != dir->d_name )
+                writeToLog("Removing "+thePath+"/"+std::string(dir->d_name));
+            #endif
         }
     }
 
@@ -491,6 +508,7 @@ OPResult SaveFile::extractSVIToPath(const std::string& theSVIPath, const std::st
         if( it->file_stat.m_is_directory ) {
             std::ostringstream dir_stream;
             dir_stream << "Creating " << theDestinationPath+it->file_stat.m_filename;
+            writeToLog(dir_stream.str());
             if( mkdir((theDestinationPath+it->file_stat.m_filename).c_str(), 0x777) != 0 ) {
                 OPResult op_res(ERR_CREATE_DIRECTORY);
                 writeToLog(op_res);
