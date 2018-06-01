@@ -377,10 +377,6 @@ OPResult SaveFile::wipePath(const std::string& thePath) {
 }
 
 OPResult SaveFile::wipeFiles(const std::string& thePath) {
-    std::ostringstream initial_stream;
-    initial_stream << "Wiping away files at " << thePath;
-    writeToLog(initial_stream.str());
-
     //just deleting files
     DIR* d = opendir(thePath.c_str()); // open the path
     if( d == NULL ) {
@@ -400,7 +396,7 @@ OPResult SaveFile::wipeFiles(const std::string& thePath) {
 
         if(dir->d_type == DT_REG) {
             #ifndef EMULATOR //yuzu currently crashes on remove
-            writeToLog("Removing "+thePath+"/"+std::string(dir->d_name));
+            writeToLog("Removing file "+thePath+"/"+std::string(dir->d_name));
             if( remove((thePath+"/"+std::string(dir->d_name)).c_str()) != 0 ) {
                 OPResult op_res(ERR_DELETE_FILE);
                 writeToLog(op_res);
@@ -420,10 +416,6 @@ OPResult SaveFile::wipeFiles(const std::string& thePath) {
 }
 
 OPResult SaveFile::wipeFolders(const std::string& thePath) {
-    std::ostringstream initial_stream;
-    initial_stream << "Wiping away folder at " << thePath;
-    writeToLog(initial_stream.str());
-
     //just deleting folders
     DIR* d = opendir(thePath.c_str()); // open the path
     if( d == NULL ) { // if was not able return
@@ -444,7 +436,7 @@ OPResult SaveFile::wipeFolders(const std::string& thePath) {
         }
     }
 
-    writeToLog("Removing "+thePath+"/"+std::string(dir->d_name));
+    writeToLog("Removing folder"+thePath+"/"+std::string(dir->d_name));
     #ifndef EMULATOR
     if( rmdir(thePath.c_str()) != 0 ) {
         OPResult op_res(ERR_DELETE_FOLDER);

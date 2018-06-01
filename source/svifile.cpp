@@ -15,6 +15,7 @@ SVIFile::SVIFile(const std::string& thePath) {
 void SVIFile::getInformations() {
     std::ostringstream initial_stream;
     initial_stream << "Starting the loading process for the .svi file at " << file_path;
+    writeToLog(initial_stream.str());
 
     //we will now extract our headerfile into a string and read its information
     size_t header_size = 0;
@@ -56,7 +57,7 @@ void SVIFile::getInformations() {
     newline_pos = str_buffer.find("\n", element_pos);
     value_pos = element_pos + SaveFile::HEADER_ID_STR.size() + SaveFile::HEADER_SEPARATOR.size();
     if( newline_pos == std::string::npos ) value_length = std::string::npos;
-    else value_length = newline_pos - element_pos - SaveFile::HEADER_ID_STR.size() - SaveFile::HEADER_SEPARATOR.size() - 1;
+    else value_length = newline_pos - element_pos - SaveFile::HEADER_ID_STR.size() - SaveFile::HEADER_SEPARATOR.size(); //a -1 should go here based on my calculations (:D) but it doesn't work with it
     std::string temp = str_buffer.substr(value_pos, value_length);
     title_id = std::strtoul(temp.c_str(), nullptr, 10);
 
@@ -66,7 +67,7 @@ void SVIFile::getInformations() {
         newline_pos = str_buffer.find("\n", element_pos);
         value_pos = element_pos + SaveFile::HEADER_NAME_STR.size() + SaveFile::HEADER_SEPARATOR.size();
         if( newline_pos == std::string::npos ) value_length = std::string::npos;
-        else value_length = newline_pos - element_pos - SaveFile::HEADER_NAME_STR.size() - SaveFile::HEADER_SEPARATOR.size() - 1;
+        else value_length = newline_pos - element_pos - SaveFile::HEADER_NAME_STR.size() - SaveFile::HEADER_SEPARATOR.size();
         title_name = str_buffer.substr(value_pos, value_length);
     }
 
@@ -81,7 +82,7 @@ void SVIFile::getInformations() {
         newline_pos = str_buffer.find("\n", element_pos);
         value_pos = element_pos + SaveFile::HEADER_AUTHOR_STR.size() + SaveFile::HEADER_SEPARATOR.size();
         if( newline_pos == std::string::npos ) value_length = std::string::npos;
-        else value_length = newline_pos - element_pos - SaveFile::HEADER_AUTHOR_STR.size() - SaveFile::HEADER_SEPARATOR.size() - 1;
+        else value_length = newline_pos - element_pos - SaveFile::HEADER_AUTHOR_STR.size() - SaveFile::HEADER_SEPARATOR.size();
         title_author = str_buffer.substr(value_pos, value_length);
     }
 
@@ -91,7 +92,9 @@ void SVIFile::getInformations() {
         title_author = SaveFile::UNKNOWN_PARAMETER_STR;
     }
 
-    writeToLog(".svi loading SUCCESS");
+    std::ostringstream final_stream;
+    final_stream << ".svi loading SUCCESS, " << file_path << " is " << title_id <<", " << title_name << " - " << title_author;
+    writeToLog(final_stream.str());
 }
 
 std::vector<SVIFile> SVIFile::getAllSVIInPath(const std::string& thePath) {
@@ -103,6 +106,7 @@ std::vector<SVIFile> SVIFile::getAllSVIInPath(const std::string& thePath) {
 
     std::ostringstream initial_stream;
     initial_stream << "Starting a .svi scan at " << sanitized_path;
+    writeToLog(initial_stream.str());
 
     DIR* d = opendir(sanitized_path.c_str()); // open the path
     if( d == NULL ) {
@@ -120,7 +124,10 @@ std::vector<SVIFile> SVIFile::getAllSVIInPath(const std::string& thePath) {
             std::string file_extension;
             if( point_pos != std::string::npos ) file_extension = file_name.substr(point_pos + 1, std::string::npos); //searching for the .svi extension
 
-            if( file_extension == "svi" ) buffer.push_back(SVIFile(sanitized_path+dir->d_name));
+            if( file_extension == "svi" ) {
+                writeToLog(std::string("Found ")+dir->d_name);
+                buffer.push_back(SVIFile(sanitized_path+dir->d_name));
+            }
         }
     }
 

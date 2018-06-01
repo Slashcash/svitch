@@ -22,11 +22,11 @@ include $(DEVKITPRO)/libnx/switch_rules
 # EXEFS_SRC is the optional input directory containing data copied into exefs, if anything this normally should only contain "main.npdm".
 # ROMFS is the directory containing data to be added to RomFS, relative to the Makefile (Optional)
 #
-# NO_ICON: if set to anything, do not use icon.
+#NO_ICON: if set to anything, do not use icon.
 # NO_NACP: if set to anything, no .nacp file is generated.
-# APP_TITLE is the name of the app stored in the .nacp file (Optional)
-# APP_AUTHOR is the author of the app stored in the .nacp file (Optional)
-# APP_VERSION is the version of the app stored in the .nacp file (Optional)
+APP_TITLE := Svitch
+APP_AUTHOR := Slashcash
+APP_VERSION := 0.1.1
 # APP_TITLEID is the titleID of the app stored in the .nacp file (Optional)
 # ICON is the filename of the icon (.jpg), relative to the project folder.
 #   If not set, it attempts to use one of the following (in this order):
