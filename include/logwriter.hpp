@@ -2,6 +2,7 @@
 #define _LOGWRITER_HPP_
 
 #include <fstream>
+#include <switch.h>
 
 #include "opresult.hpp"
 
@@ -24,6 +25,7 @@ class LogWriter {
         static Level log_level; //this will filter the log out
         static std::ofstream log; //the actual log
         static std::string level_str[ENUM_COUNT];
+        static Mutex mutex; //this is for thread safety
 
         static void initialize();
 
@@ -34,8 +36,8 @@ class LogWriter {
         static void setLevel(const Level theLevel) { log_level = theLevel; }
         static void setActive(const bool isActive) { is_active = isActive; }
 
-        static void writeToLog(const std::string& theMSG, const Level theLevel = DEBUG);
-        static void writeToLog(const OPResult& theResult, const Level theLevel = ERROR);
+        static void writeToLog(const std::string& theMSG, const unsigned int theTabNum = 0, const Level theLevel = DEBUG); //by passing a value > 0 as theTabNum the log message is written with  theTabNum tabs for readibility reasons
+        static void writeToLog(const OPResult& theResult, const unsigned int theTabNum = 0, const Level theLevel = ERROR);
 };
 
 #endif // _LOGWRITER_HPP_

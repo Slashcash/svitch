@@ -10,6 +10,7 @@ LogWriter::Level LogWriter::log_level = LogWriter::Level::DEBUG;
 bool LogWriter::is_active = true;
 std::ofstream LogWriter::log;
 std::string LogWriter::level_str[LogWriter::Level::ENUM_COUNT];
+Mutex LogWriter::mutex;
 
 const std::string LogWriter::DEBUG_STR = "DEBUG";
 const std::string LogWriter::WARNING_STR = "WARNING";
@@ -32,19 +33,25 @@ void LogWriter::initialize() {
         is_initialized = true;
 }
 
-void LogWriter::writeToLog(const std::string& theMSG, const Level theLevel) {
+void LogWriter::writeToLog(const std::string& theMSG, const unsigned int theTabNum, const Level theLevel) {
     if( !is_initialized ) initialize();
 
     if( is_active ) {
         if( theLevel >= log_level ) {
             std::ostringstream msg;
-            msg << level_str[theLevel] << ": " << theMSG << "\n";
-            std::cerr << msg.str() << std::flush;
+            msg << level_str[theLevel] << ": "; //adding the level
+            for(unsigned int i = 0; i < theTabNum; i++) msg << "\t"; //adding tab if requested
+            msg << theMSG; //adding the actual message
+            //FOR THREAD SAFE LOGGING
+            mutexLock(&mutex);
+            std::cerr << msg.str() << std::endl;
+            mutexUnlock(&mutex);
+            //END OF CRITICAL
         }
     }
 }
 
-void LogWriter::writeToLog(const OPResult& theResult, const Level theLevel) {
+void LogWriter::writeToLog(const OPResult& theResult, const unsigned int theTabNum, const Level theLevel) {
     std::ostringstream msg;
     msg << "Failed with error " << theResult.str();
 
