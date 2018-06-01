@@ -77,13 +77,15 @@ void Gui::run() {
         //updating
         states.top()->updateBase();
 
+        //checking if the current state requested an exit
+        if( states.top()->isRequestedToExit() ) { dropState(); continue; }
+
         //drawing
         Window::getInstance()->clear();
         states.top()->drawBase();
         Window::getInstance()->update();
 
-        //checking if the current state requested an exit
-        if( states.top()->isRequestedToExit() ) dropState();
+
     }
 }
 
