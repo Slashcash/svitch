@@ -1,0 +1,16 @@
+no_save=Nessun salvataggio trovato
+press_b_exit=Premi B per uscire
+press_b_undo=Premi B per annullare
+press_x_import=Premi X per importare un salvataggio dalla SD CARD
+press_a_import=Premi A per importare questo file
+press_arrow_scroll=Premi +/- per navigare tra i titoli
+press_arrow_scoll_file=Premi +/- per navigare tra i file
+press_y_export=Premi Y per esportare il salvataggio sulla SD CARD
+press_a_continue=Premi A per continuare
+extract_success=Salvataggio estratto con successo in:
+extract_failed=Estrazione del salvataggio fallita:
+file_found=File trovato:
+importing_for=Stai importando un salvataggio per
+no_importing=Questo non sembra essere un salvataggio per
+importing_succesful=Import eseguito con successo
+importing_failed=Import fallito:
