@@ -10,7 +10,7 @@ bool LangFile::is_initialized = false;
 OPResult LangFile::loadFromFile(const std::string& thePath) {
     std::ostringstream initial_stream;
     initial_stream << "Starting the language file loading process at " << thePath;
-    writeToLog(initial_stream.str());
+    writeToLog(initial_stream.str(), 1);
 
     lang_map.clear();
     std::ifstream stream;

@@ -15,7 +15,7 @@ SVIFile::SVIFile(const std::string& thePath) {
 void SVIFile::getInformations() {
     std::ostringstream initial_stream;
     initial_stream << "Starting the loading process for the .svi file at " << file_path;
-    writeToLog(initial_stream.str());
+    writeToLog(initial_stream.str(), 1);
 
     //we will now extract our headerfile into a string and read its information
     size_t header_size = 0;
@@ -106,7 +106,7 @@ std::vector<SVIFile> SVIFile::getAllSVIInPath(const std::string& thePath) {
 
     std::ostringstream initial_stream;
     initial_stream << "Starting a .svi scan at " << sanitized_path;
-    writeToLog(initial_stream.str());
+    writeToLog(initial_stream.str(), 1);
 
     DIR* d = opendir(sanitized_path.c_str()); // open the path
     if( d == NULL ) {

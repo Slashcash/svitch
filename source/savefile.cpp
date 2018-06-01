@@ -49,7 +49,7 @@ void SaveFile::getSaveFileInformation() {
     #ifndef EMULATOR
     std::ostringstream log_str;
     log_str << "Getting additional information for " << std::hex << title_id;
-    writeToLog(log_str.str());
+    writeToLog(log_str.str(), 1);
 
     NsApplicationControlData* buf = nullptr;
     unsigned int langentry = 1; //this is the id for the english language
@@ -203,7 +203,7 @@ void SaveFile::getSaveFileInformationFromHeader(std::stringstream& theStringStre
 
 std::vector<SaveFile> SaveFile::getAllSaveFiles() {
     std::vector<SaveFile> buffer;
-    writeToLog("Starting a savefile scan on the system");
+    writeToLog("Starting a savefile scan on the system", 1);
 
     #ifdef EMULATOR
     writeToLog("Opening the iterator");
@@ -536,7 +536,7 @@ OPResult SaveFile::extractSVIToPath(const std::string& theSVIPath, const std::st
 OPResult SaveFile::extractToSVIFile(const std::string& theSVIPath) {
     std::ostringstream initial_stream;
     initial_stream << "Starting the SVI extraction process for " << std::hex << title_id << " to " << theSVIPath;
-    writeToLog(initial_stream.str());
+    writeToLog(initial_stream.str(), 1);
 
     OPResult op_res;
     std::string base_path;
@@ -695,6 +695,7 @@ OPResult SaveFile::extractPathToSVI(mz_zip_archive& theArchive, const std::strin
 OPResult SaveFile::importFromSVIFile(const SVIFile& theSVIFile) {
     std::ostringstream initial_stream;
     initial_stream << "Starting an import operation for " << std::hex << title_id << " from " << theSVIFile.getPath();
+    writeToLog(initial_stream.str(), 1);
 
     OPResult op_res;
 

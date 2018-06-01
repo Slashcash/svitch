@@ -11,7 +11,7 @@ bool Window::is_initialized = false;
 Window::Window() {
     is_valid = true;
     //GRAPHIC ENVIROMENT
-    writeToLog("Initializing graphic enviroment");
+    writeToLog("Initializing graphic enviroment", 1);
     gfxInitDefault();
 
     //getting a framebuffer pointer & size

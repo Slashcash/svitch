@@ -19,7 +19,7 @@ Font::Font() {
 OPResult Font::loadFromFile(const std::string& thePath) {
     std::ostringstream initial_stream;
     initial_stream << "Loading a font from " << thePath;
-    writeToLog(initial_stream.str());
+    writeToLog(initial_stream.str(), 1);
 
     if( !freetype_initialized ) {
         OPResult op_res(ERR_FREETYPE_NOT_INITIALIZED);
