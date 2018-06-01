@@ -38,7 +38,8 @@ enum Error { //all the things that can go wrong in this software
     ERR_DELETE_FILE,
     ERR_INVALID_SVI,
     ERR_DELETE_FOLDER,
-    ERR_CREATE_DIRECTORY
+    ERR_CREATE_DIRECTORY,
+    ERR_GET_SYSTEM_LANGUAGE
 };
 
 class OPResult {
