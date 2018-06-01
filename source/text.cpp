@@ -11,9 +11,16 @@ Size Text::getSize() const {
 
         unsigned int x_size = 0;
         std::vector<unsigned int> y_size;
-        for(unsigned int i = 0; i < msg.size(); i++) {
+        for(unsigned int i = 0; i < msg.size(); ) {
             Size glyph_size;
-            font->getGlyphData(msg[i], glyph_size);
+
+            //converting to utf-8
+            uint32_t utf8_char;
+            ssize_t skip = decode_utf8(&utf8_char,(uint8_t*)(&msg[i]));
+            if( skip <= 0 ) break;
+            i = i + skip;
+
+            font->getGlyphData(utf8_char, glyph_size);
 
             if( i != msg.size() - 1 ) x_size = x_size + font->getGlyphAdvanceSize().x;
             else x_size = x_size + glyph_size.x; //if it is the last character we just add its size, not its advance
@@ -30,9 +37,16 @@ void Text::drawCurrent(Window& theWindow, const Transformation& theTransformatio
         font->setFontSize(font_size);
 
         int pen_x = 0;
-        for(unsigned int i = 0; i < msg.size(); i++) {
+        for(unsigned int i = 0; i < msg.size(); ) {
             Size glyph_size;
-            std::vector<unsigned char>* raw_data = font->getGlyphData(msg[i], glyph_size);
+
+            //converting to utf-8
+            uint32_t utf8_char;
+            ssize_t skip = decode_utf8(&utf8_char,(uint8_t*)(&msg[i]));
+            if( skip <= 0 ) break;
+            i = i + skip;
+
+            std::vector<unsigned char>* raw_data = font->getGlyphData(utf8_char, glyph_size);
 
             for(unsigned int y = 0; y < glyph_size.y; y++ ) {
                 for(unsigned int x = 0; x < glyph_size.x; x++  ) {

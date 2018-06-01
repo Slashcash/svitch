@@ -26,7 +26,7 @@ class Font : public Loadable, public LogWriter {
         Font();
 
         bool isLoaded() const { return font_loaded; }
-        std::vector<unsigned char>* getGlyphData(const char theCharacter, Size& theSize); //returns raw glyph RGBA8 data, theSize is filled with its size
+        std::vector<unsigned char>* getGlyphData(const uint32_t theCharacter, Size& theSize); //returns raw glyph RGBA8 data, theSize is filled with its size
         Size getGlyphAdvanceSize() const;
         Size getGlyphBitmapSize() const;
 

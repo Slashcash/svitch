@@ -65,7 +65,7 @@ OPResult Font::setFontSize(const unsigned int theSize) {
     else return OPResult(OPResult::SUCCESS);
 }
 
-std::vector<unsigned char>* Font::getGlyphData(const char theCharacter, Size& theSize) {
+std::vector<unsigned char>* Font::getGlyphData(const uint32_t theCharacter, Size& theSize) {
     glyph_data.clear();
 
     if( !freetype_initialized ) { theSize = Size(0, 0); return nullptr; }
