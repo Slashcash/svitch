@@ -367,12 +367,27 @@ OPResult SaveFile::commit() {
 #endif
 
 OPResult SaveFile::wipePath(const std::string& thePath) {
-    OPResult op_res = wipeFiles(thePath);
-    if( !op_res ) return op_res;
+    DIR* d = opendir(thePath.c_str()); // open the path
+    if( d == NULL ) {
+        OPResult op_res(ERR_OPEN_ITERATOR);
+        writeToLog(op_res);
+        return op_res;
+    }
 
-    op_res = wipeFolders(thePath);
-    if( !op_res ) return op_res;
+    dirent* dir; // for the directory entries
 
+    OPResult op_res;
+    while ((dir = readdir(d)) != NULL) {
+        if( dir->d_type == DT_DIR ) {
+            op_res = wipeFiles(thePath+"/"+dir->d_name);
+            if( !op_res ) return op_res;
+
+            op_res = wipeFolders(thePath+"/"+dir->d_name);
+            if( !op_res ) return op_res;
+        }
+    }
+
+    closedir(d);
     return OPResult(OPResult::SUCCESS);
 }
 
