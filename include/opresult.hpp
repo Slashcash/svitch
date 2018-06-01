@@ -28,6 +28,8 @@ enum Error { //all the things that can go wrong in this software
     ERR_WRITE_ARCHIVE_FILE,
     ERR_FINALIZE_ARCHIVE,
     ERR_WRITE_FILE,
+    ERR_READ_FILE,
+    ERR_DECODE_IMG,
     ERR_CREATE_THREAD,
     ERR_START_THREAD,
     ERR_FREETYPE_NOT_INITIALIZED,
