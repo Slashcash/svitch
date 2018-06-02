@@ -509,6 +509,7 @@ OPResult SaveFile::extractSVIToPath(const std::string& theSVIPath, const std::st
             std::ostringstream dir_stream;
             dir_stream << "Creating " << theDestinationPath+it->file_stat.m_filename;
             writeToLog(dir_stream.str());
+
             if( mkdir((theDestinationPath+it->file_stat.m_filename).c_str(), 0x777) != 0 ) {
                 OPResult op_res(ERR_CREATE_DIRECTORY);
                 writeToLog(op_res);

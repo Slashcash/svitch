@@ -2,6 +2,8 @@
 
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <dirent.h>
+#include <algorithm>
 
 #include "gui.hpp"
 #include "savefile.hpp"
@@ -118,8 +120,7 @@ void MainState::onNotify(const Signal& theSignal) {
 
 void MainState::export_svi() {
     char temp_buffer[256];
-
-    std::string path = EXPORT_PATH + itoa(savefiles[save_selected].getTitleID(), temp_buffer, 16) + std::string(".svi");
+    std::string path = EXPORT_PATH + chooseExportFileName();
 
     OPResult res = savefiles[save_selected].extractToSVIFile(path);
     std::string result_str;
@@ -128,6 +129,37 @@ void MainState::export_svi() {
 
     ResultState* res_state = new ResultState(result_str);
     Gui::getInstance()->addState(res_state);
+}
+
+std::string MainState::chooseExportFileName() const {
+    char temp_buffer[256];
+
+    const std::string DEFAULT_FILENAME = itoa(savefiles[save_selected].getTitleID(), temp_buffer, 16) + std::string(".svi");
+    std::string chosen_name = DEFAULT_FILENAME;
+    std::vector<std::string> file_names_in_folder;
+
+    //getting all the filenames in the export folder
+    DIR* d = opendir(EXPORT_PATH.c_str()); // open the path
+    if( d == NULL ) return chosen_name;
+
+    dirent* dir; // for the directory entries
+
+    while((dir = readdir(d)) != NULL) file_names_in_folder.push_back(dir->d_name);
+
+    //choosing an unique name
+    bool found = false;
+    int i = 1;
+    while( !found ) {
+        if( std::find(file_names_in_folder.begin(), file_names_in_folder.end(), chosen_name) == file_names_in_folder.end() ) found = true; //if there is nothing with the same name the name is unique :D
+        else { //otherwise we try all the variations like this NAME_1, NAME_2...
+            std::ostringstream temp_str;
+            temp_str << DEFAULT_FILENAME << "_" << i;
+            chosen_name = temp_str.str();
+            i++;
+        }
+    }
+
+    return chosen_name;
 }
 
 void MainState::import_svi() {

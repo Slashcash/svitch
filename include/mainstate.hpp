@@ -28,6 +28,8 @@ class MainState : public State {
         void export_svi();
         void import_svi();
 
+        std::string chooseExportFileName() const;
+
     public:
         MainState();
 
