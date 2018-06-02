@@ -57,6 +57,7 @@ class Window : public LogWriter {
         bool getInputEvents(InputEvent& theBuffer);
         bool isOpen() const { return appletMainLoop(); }
         static Window* getInstance();
+        static void destroy();
 };
 
 #endif

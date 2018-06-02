@@ -37,6 +37,9 @@ Gui::Gui() {
     //converting it into its numerical id
     setMakeLanguage(*((u64*)(system_language_code.c_str())), &system_language);
 
+    //exiting set
+    setExit();
+
     #else
     system_language = DEFAULT_LANGUAGE;
     system_language_code = DEFAULT_LANGUAGECODE;
@@ -112,4 +115,21 @@ Gui* Gui::getInstance() {
     }
 
     return instance;
+}
+
+void Gui::destroy() {
+    //dropping out all the left out states
+    while( !Gui::getInstance()->states.empty() ) Gui::getInstance()->dropState();
+    delete instance;
+    instance = nullptr;
+    is_initialized = false;
+
+    //destroying the langfile singleton
+    LangFile::destroy();
+
+    //shutting down romfs
+    romfsExit();
+
+    //destroying window
+    Window::getInstance()->destroy();
 }

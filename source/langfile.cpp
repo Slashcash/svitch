@@ -55,3 +55,9 @@ LangFile* LangFile::getInstance() {
 
     return instance;
 }
+
+void LangFile::destroy() {
+    delete instance;
+    instance = nullptr;
+    is_initialized = false;
+}

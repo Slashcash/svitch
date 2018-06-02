@@ -206,3 +206,23 @@ bool Window::getInputEvents(InputEvent& theBuffer) {
         return true;
     }
 }
+
+void Window::destroy() {
+    //exiting gfx
+    gfxExit();
+
+    //waiting for the input thread to terminate
+    if( Window::getInstance()->thread_started) { //why stopping a thread that didn't even start?
+        Window::getInstance()->request_to_exit = true; //asking the thread to terminate
+        writeToLog("Waiting the input thread to terminate");
+        threadWaitForExit(&Window::getInstance()->input_thread); //waiting for the thread to stop (not checking the result because what would we do with it?)
+    }
+
+    if( Window::getInstance()->thread_initialized ) { //why deinitialize if it did not initialize?
+        threadClose(&Window::getInstance()->input_thread); //freeing resources
+    }
+
+    delete instance;
+    instance = nullptr;
+    is_initialized = false;
+}
