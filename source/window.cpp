@@ -127,7 +127,7 @@ void Window::inputManagement(void* theParameter) {
         hidScanInput();
 
         //checking for the pressed buttons for P1
-        u32 key_down_p1 = hidKeysDown(CONTROLLER_P1_AUTO);
+        u64 key_down_p1 = hidKeysDown(CONTROLLER_P1_AUTO);
         std::vector<Button> pressed = controllerBitMask(key_down_p1);
 
         for(auto it = pressed.begin(); it < pressed.end(); it++) {
@@ -139,7 +139,7 @@ void Window::inputManagement(void* theParameter) {
         }
 
         //checking for the released buttons for P1
-        u32 key_up_p1 = hidKeysUp(CONTROLLER_P1_AUTO);
+        u64 key_up_p1 = hidKeysUp(CONTROLLER_P1_AUTO);
         std::vector<Button> released = controllerBitMask(key_up_p1);
 
         for(auto it = released.begin(); it < released.end(); it++) {
@@ -163,7 +163,7 @@ void Window::inputManagement(void* theParameter) {
     }
 }
 
-std::vector<Button> Window::controllerBitMask(const u32 controllerState) {
+std::vector<Button> Window::controllerBitMask(const u64 controllerState) {
     std::vector<Button> buffer;
 
     //scanning for all the keys
