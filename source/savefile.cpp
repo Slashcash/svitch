@@ -229,7 +229,7 @@ std::vector<SaveFile> SaveFile::getAllSaveFiles() {
 
     //opening the iterator to scan all the saves
     writeToLog("Opening the savefile iterator");
-    res = fsOpenSaveDataIterator(&it, FsSaveDataSpaceId_NandUser);
+    Result res = fsOpenSaveDataIterator(&it, FsSaveDataSpaceId_NandUser);
     if( R_FAILED(res) ) {
         OPResult op_res(ERR_OPEN_ITERATOR, R_DESCRIPTION(res));
         writeToLog(op_res);
@@ -251,7 +251,7 @@ std::vector<SaveFile> SaveFile::getAllSaveFiles() {
     }
 
     for( unsigned int i = 0; i < total_entries; i++ ) {
-        if( info[i].SaveDataType == FsSaveDataType_SaveData && info[i].userID == logged_user_id ) {
+        if( info[i].SaveDataType == FsSaveDataType_SaveData ) {
             std::ostringstream log_str;
             log_str << "Found " << std::hex << info[i].titleID;
             writeToLog(log_str.str());
