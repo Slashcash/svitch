@@ -221,40 +221,6 @@ std::vector<SaveFile> SaveFile::getAllSaveFiles() {
 
     closedir(d); // finally close the directory
     #else
-    //retrieving logged in account informations
-    u128 logged_user_id = 0;
-
-    writeToLog("Initializing acc");
-    Result res = accountInitialize();
-    if( R_FAILED(res) ) {
-        OPResult op_res(ERR_INITIALIZE_ACC, R_DESCRIPTION(res));
-        writeToLog(op_res);
-        return buffer;
-    }
-
-    //getting the actual id for the logged user
-    writeToLog("Getting the actual user id");
-    bool account_selected;
-    res = accountGetActiveUser(&logged_user_id, &account_selected);
-    if( R_FAILED(res) ) {
-        OPResult op_res(ERR_GET_USERID, R_DESCRIPTION(res));
-        writeToLog(op_res);
-        accountExit();
-        return buffer;
-    }
-
-    if( !account_selected ) {
-        OPResult op_res(ERR_ACCOUNT_NOT_LOGGED);
-        writeToLog(op_res);
-        accountExit();
-        return buffer;
-    }
-
-    accountExit();
-    std::ostringstream id_stream;
-    id_stream << "The currently logged user is " << std::hex << ((u64)(logged_user_id>>64)) << "/" << std::hex << ((u64)(logged_user_id));
-    writeToLog(id_stream.str());
-
     //some useful variables
     FsSaveDataIterator it;
     size_t total_entries = 0;
