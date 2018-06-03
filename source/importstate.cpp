@@ -76,7 +76,7 @@ ImportState::ImportState(const SaveFile& theSaveFile) : savefile(theSaveFile) {
 
     //writing the name of first save on screen
     if( savefiles_folder.empty() ) {
-        game_title.setMsg(LangFile::getInstance()->getValue("no_save") + " in " + BASE_PATH);
+        game_title.setMsg(LangFile::getInstance()->getValue("no_save") + " in " + IMPORT_PATH);
         game_title.setPosition( (Window::getInstance()->getSize().x / 2) - (game_title.getSize().x /2), (Window::getInstance()->getSize().y / 2) - (game_title.getSize().y / 2) );
 
         game_author.setMsg(LangFile::getInstance()->getValue("press_b_undo"));
