@@ -454,7 +454,7 @@ OPResult SaveFile::wipeFolders(const std::string& thePath) {
         }
     }
 
-    writeToLog("Removing folder"+thePath+"/"+std::string(dir->d_name));
+    writeToLog("Removing folder "+thePath);
     #ifndef EMULATOR
     if( rmdir(thePath.c_str()) != 0 ) {
         OPResult op_res(ERR_DELETE_FOLDER);
