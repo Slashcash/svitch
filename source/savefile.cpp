@@ -466,5 +466,12 @@ OPResult SaveFile::extractPathToSVI(mz_zip_archive& theArchive, const std::strin
 
     closedir(d);
     return OPResult(OPResult::SUCCESS);
-
 }
+
+#ifndef EMULATOR
+std::string SaveFile::getUserName() const {
+    std::ostringstream stream;
+    stream << std::hex << ((u64)(user_id>>64)) << "/" << std::hex << ((u64)(user_id));
+    return stream.str();
+}
+#endif

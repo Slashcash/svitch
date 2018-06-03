@@ -14,3 +14,4 @@ importing_for=You are importing a save for
 no_importing=This does not seem to be a savefile for
 importing_succesful=Importing succesful
 importing_failed=Importing failed with error
+user=User

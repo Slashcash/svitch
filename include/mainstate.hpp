@@ -16,6 +16,7 @@ class MainState : public State {
 
         Text game_title;
         Text game_author;
+        Text game_userid;
 
         Text arrow_info;
         Text export_info;

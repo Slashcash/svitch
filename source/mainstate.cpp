@@ -18,6 +18,10 @@ MainState::MainState() {
     save_selected = 0;
 
     //texts initialization
+    game_userid.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
+    game_title.setCharacterSize(25);
+    game_author.attachChild(&game_userid);
+
     game_author.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
     game_author.setCharacterSize(35);
 
@@ -95,11 +99,26 @@ MainState::MainState() {
 }
 
 void MainState::buildTitleInfo() {
+    const unsigned int SPACING = 10;
+
     game_title.setMsg(savefiles[save_selected].getTitleName());
     game_title.setPosition( (Window::getInstance()->getSize().x / 2) - (game_title.getSize().x /2), (Window::getInstance()->getSize().y / 2) - (game_title.getSize().y / 2) );
 
     game_author.setMsg(savefiles[save_selected].getTitleAuthor());
-    game_author.setPosition( (game_title.getSize().x / 2) - (game_author.getSize().x / 2), game_title.getSize().y + 10 );
+    game_author.setPosition( (game_title.getSize().x / 2) - (game_author.getSize().x / 2), game_title.getSize().y + SPACING );
+
+    std::string user_id_temp_str;
+    #ifdef EMULATOR
+    u128 temp_user_id_buffer = 69696969696969; //a random number really
+    std::ostringstream user_id_stream;
+    user_id_stream << LangFile::getInstance()->getValue("user") << ": " << std::hex << ((u64)(temp_user_id_buffer>>64)) << "/" << std::hex << ((u64)(temp_user_id_buffer));
+    user_id_temp_str = user_id_stream.str();
+    #else
+    user_id_temp_str = LangFile::getInstance()->getValue("user") + ": " + savefiles[save_selected].getUserName();
+    #endif
+
+    game_userid.setMsg(user_id_temp_str);
+    game_userid.setPosition( (game_author.getSize().x / 2) - (game_userid.getSize().x / 2), game_author.getSize().y + SPACING );
 }
 
 void MainState::onNotify(const Signal& theSignal) {

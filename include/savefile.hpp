@@ -55,6 +55,11 @@ class SaveFile : public LogWriter {
             u64 getTitleID() const { return title_id; }
             std::string getTitleName() const { return title_name; }
             std::string getTitleAuthor() const { return title_author; }
+            #ifndef EMULATOR
+            u128 getUserID() const { return user_id; }
+            std::string getUserName() const;
+            #endif
+
 
             static std::vector<SaveFile> getAllSaveFiles(); //gets all the savefiles found on the system
             OPResult extractToSVIFile(const std::string& theSVIPath);
