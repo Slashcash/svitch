@@ -41,7 +41,7 @@ class Window : public LogWriter {
         ~Window() {}
 
         int mapCoordinatesToLinear(const Coordinate& theCoordinate) const; //converts a coordinate into a position in the linear framebuffer
-        static std::vector<Button> controllerBitMask(const u32 controllerState); //this does a bitmask on u32 to see which button has been pressed/released
+        static std::vector<Button> controllerBitMask(const u64 controllerState); //this does a bitmask on u32 to see which button has been pressed/released
         static void inputManagement(void* theParameter); //this will be launched in a separate thread
 
     public:
