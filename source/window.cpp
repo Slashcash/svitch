@@ -27,6 +27,9 @@ Window::Window() {
     thread_initialized = false;
     thread_started = false;
 
+    //initializing the mutex
+    mutexInit(&input_mutex);
+
     //some useful constants for the thread initialization
     size_t thread_stack_size = 1024; //the size for the stack of the separate thread
     int thread_priority = 0x2C; //the priority for this thread, 0x2C is default in nintendo switch
