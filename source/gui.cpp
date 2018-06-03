@@ -15,6 +15,7 @@ Gui::Gui() {
     //creating the window
     if( !Window::getInstance()->isValid() ) return;
 
+    #ifndef EMULATOR
     //enabling romfs
     writeToLog("Mounting romfs", 1);
     Result res = romfsInit();
@@ -25,6 +26,7 @@ Gui::Gui() {
     }
 
     writeToLog("Mounting romfs SUCCESS");
+    #endif
 
     //all the language supported by this software (add them here to support more of them)
     supported_languages.push_back("en-US");
@@ -127,8 +129,10 @@ void Gui::destroy() {
     //destroying the langfile singleton
     LangFile::destroy();
 
+    #ifndef EMULATOR
     //shutting down romfs
     romfsExit();
+    #endif
 
     //destroying window
     Window::getInstance()->destroy();

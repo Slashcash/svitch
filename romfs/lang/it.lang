@@ -14,3 +14,4 @@ importing_for=Stai importando un salvataggio per
 no_importing=Questo non sembra essere un salvataggio per
 importing_succesful=Import eseguito con successo
 importing_failed=Import fallito:
+user=Utente

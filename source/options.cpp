@@ -6,7 +6,11 @@
 #include <switch/types.h>
 
 const std::string BASE_PATH;
+#ifndef EMULATOR
 const std::string ROMFS_PATH = "romfs:/";
+#else
+const std::string ROMFS_PATH = BASE_PATH + "romfs/";
+#endif
 const std::string EXPORT_PATH = BASE_PATH + "export/";
 const std::string BACKUP_PATH = BASE_PATH + EXPORT_PATH + "backup/";
 const std::string IMPORT_PATH = BASE_PATH + "import/";
