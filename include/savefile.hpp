@@ -67,7 +67,7 @@ class SaveFile : public LogWriter {
             std::string getTitleAuthor() const { return title_author; }
             #ifndef EMULATOR
             u128 getUserID() const { return user_id; }
-            std::string getUserName() const { return user_name; }
+            std::string getUserName() const { return account_name; }
             #endif
 
 

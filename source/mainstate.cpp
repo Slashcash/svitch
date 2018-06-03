@@ -150,13 +150,13 @@ void MainState::export_svi() {
 std::string MainState::chooseExportFileName() const {
     char temp_buffer[256];
 
-    const std::string DEFAULT_FILENAME = itoa(savefiles[save_selected].getTitleID(), temp_buffer, 16) + std::string(".svi");
+    const std::string DEFAULT_FILENAME = itoa(savefiles[save_selected].getTitleID(), temp_buffer, 16);
     std::string chosen_name = DEFAULT_FILENAME;
     std::vector<std::string> file_names_in_folder;
 
     //getting all the filenames in the export folder
     DIR* d = opendir(EXPORT_PATH.c_str()); // open the path
-    if( d == NULL ) return chosen_name;
+    if( d == NULL ) return chosen_name + ".svi";
 
     dirent* dir; // for the directory entries
 
@@ -166,7 +166,7 @@ std::string MainState::chooseExportFileName() const {
     bool found = false;
     int i = 1;
     while( !found ) {
-        if( std::find(file_names_in_folder.begin(), file_names_in_folder.end(), chosen_name) == file_names_in_folder.end() ) found = true; //if there is nothing with the same name the name is unique :D
+        if( std::find(file_names_in_folder.begin(), file_names_in_folder.end(), chosen_name + ".svi") == file_names_in_folder.end() ) found = true; //if there is nothing with the same name the name is unique :D
         else { //otherwise we try all the variations like this NAME_1, NAME_2...
             std::ostringstream temp_str;
             temp_str << DEFAULT_FILENAME << "_" << i;
@@ -175,7 +175,7 @@ std::string MainState::chooseExportFileName() const {
         }
     }
 
-    return chosen_name;
+    return chosen_name + ".svi";
 }
 
 void MainState::import_svi() {
