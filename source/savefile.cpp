@@ -102,9 +102,29 @@ void SaveFile::getSaveFileInformation() {
         return; //we have to return and this condition is not an error, just a warning
     }
 
+    if( strncmp(buf->nacp.lang[langentry].name, "", sizeof(name)) == 0 ) {
+        OPResult op_res(ERR_NS_NOT_FOUND);
+        writeToLog(op_res, LogWriter::WARNING);
+        delete buf;
+        title_name = UNKNOWN_PARAMETER_STR;
+        title_author = UNKNOWN_PARAMETER_STR;
+        nsExit();
+        return; //we have to return and this condition is not an error, just a warning
+    }
+
     memset(name, 0, sizeof(name)); //do not assume it is null-terminated
     strncpy(name, buf->nacp.lang[langentry].name, sizeof(name)-1);
     title_name = name;
+
+    if( strncmp(buf->nacp.lang[langentry].author, "", sizeof(author)) == 0 ) {
+        OPResult op_res(ERR_NS_NOT_FOUND);
+        writeToLog(op_res, LogWriter::WARNING);
+        delete buf;
+        title_name = UNKNOWN_PARAMETER_STR;
+        title_author = UNKNOWN_PARAMETER_STR;
+        nsExit();
+        return; //we have to return and this condition is not an error, just a warning
+    }
 
     memset(author, 0, sizeof(author)); //do not assume it is null-terminated
     strncpy(author, buf->nacp.lang[langentry].author, sizeof(author)-1);
