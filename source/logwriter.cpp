@@ -21,6 +21,9 @@ void LogWriter::initialize() {
         level_str[Level::WARNING] = WARNING_STR;
         level_str[Level::ERROR] = ERROR_STR;
 
+        //initializing the mutex
+        mutexInit(&mutex);
+
         std::ostringstream log_path;
         log_path << BASE_PATH << "/log.txt";
 
