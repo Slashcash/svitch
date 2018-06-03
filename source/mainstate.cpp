@@ -1,6 +1,5 @@
 #include "mainstate.hpp"
 
-#include <sys/stat.h>
 #include <stdlib.h>
 #include <dirent.h>
 #include <algorithm>
@@ -13,11 +12,6 @@
 #include "importstate.hpp"
 
 MainState::MainState() {
-    //creating the dirs
-    mkdir(EXPORT_PATH.c_str(), 0x777);
-    mkdir(BACKUP_PATH.c_str(), 0x777);
-    mkdir(IMPORT_PATH.c_str(), 0x777);
-
     //variable initialization
     save_selected = 0;
 

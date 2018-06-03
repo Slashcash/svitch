@@ -2,6 +2,7 @@
 
 #include <switch.h>
 #include <algorithm>
+#include <sys/stat.h>
 
 #include "state.hpp"
 #include "langfile.hpp"
@@ -12,6 +13,10 @@ Gui* Gui::instance = nullptr;
 bool Gui::is_initialized = false;
 
 Gui::Gui() {
+    mkdir(EXPORT_PATH.c_str(), 0x777);
+    mkdir(IMPORT_PATH.c_str(), 0x777);
+    mkdir(BACKUP_PATH.c_str(), 0x777);
+
     //creating the window
     if( !Window::getInstance()->isValid() ) return;
 

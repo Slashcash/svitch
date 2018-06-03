@@ -21,13 +21,14 @@ void SVIFile::getInformations() {
     size_t header_size = 0;
     char* buffer;
 
+    mz_zip_error mzip_error;
     writeToLog("Reading the header");
-    if( (buffer = (char*)mz_zip_extract_archive_file_to_heap(file_path.c_str(), SaveFile::DEFAULT_SAVEHEADER_NAME.c_str(), &header_size, 0)) == NULL ) {
+    if( (buffer = (char*)mz_zip_extract_archive_file_to_heap_v2(file_path.c_str(), SaveFile::DEFAULT_SAVEHEADER_NAME.c_str(), NULL, &header_size, 0, &mzip_error)) == NULL ) {
         is_valid = false;
         title_id = 0;
         title_name = SaveFile::UNKNOWN_PARAMETER_STR;
         title_author = SaveFile::UNKNOWN_PARAMETER_STR;
-        OPResult op_res(ERR_NO_SAVEHEADER);
+        OPResult op_res(ERR_NO_SAVEHEADER, mzip_error);
         writeToLog(op_res);
         return;
     }

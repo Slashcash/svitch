@@ -711,10 +711,6 @@ std::ostringstream SaveFile::createSaveHeader() const {
 }
 
 OPResult SaveFile::extractPathToSVI(mz_zip_archive& theArchive, const std::string& theSourcePath, const std::string& theIterator) const {
-    std::ostringstream initial_stream;
-    initial_stream << "Exporting " << theSourcePath << " into the archive";
-    writeToLog(initial_stream.str());
-
     DIR* d = opendir(theSourcePath.c_str()); // open the path
     if( d == NULL ) {
         OPResult op_res(ERR_READ_ITERATOR);
