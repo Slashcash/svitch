@@ -20,7 +20,6 @@ class Gui : public LogWriter {
         std::string system_language_code; //its string representation
 
         Gui();
-        ~Gui();
 
         void dropState();
         void getSetLanguage();
@@ -36,6 +35,7 @@ class Gui : public LogWriter {
 
         s32 getSystemLanguage() const { return system_language; }
         std::string getSystemLanguageCode() const { return system_language_code; }
+        static void destroy(); //needed because this is a singleton
 };
 
 #endif // _GUI_HPP_

@@ -26,6 +26,7 @@ class LangFile : public LogWriter {
         OPResult loadFromFile(const std::string& thePath);
         std::string getValue(const std::string& theKey) const;
         static LangFile* getInstance();
+        static void destroy();
 };
 
 #endif // _LANGFILE_HPP_

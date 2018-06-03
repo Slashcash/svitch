@@ -18,6 +18,7 @@ enum Error { //all the things that can go wrong in this software
     ERR_INITIALIZE_ACC,
     ERR_GET_USERID,
     ERR_ACCOUNT_NOT_LOGGED,
+    ERR_MOUNT_ROMFS,
     ERR_MOUNT_SAVEDATA,
     ERR_MOUNT_DEVICE,
     ERR_UNMOUNT_SAVEDATA,

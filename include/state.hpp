@@ -20,7 +20,7 @@ class State : public Signaler, public Observer {
     protected:
         Scene scene;
         std::vector<InputSignal> input_signals;
-        FontManager font_manager;
+        static FontManager font_manager;
 
     public:
         State() { subscrive(this); request_to_exit = false; }

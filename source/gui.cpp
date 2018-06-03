@@ -15,6 +15,17 @@ Gui::Gui() {
     //creating the window
     if( !Window::getInstance()->isValid() ) return;
 
+    //enabling romfs
+    writeToLog("Mounting romfs", 1);
+    Result res = romfsInit();
+    if( R_FAILED(res) ) {
+        OPResult op_res(ERR_MOUNT_ROMFS, R_DESCRIPTION(res));
+        writeToLog(op_res);
+        return;
+    }
+
+    writeToLog("Mounting romfs SUCCESS");
+
     //all the language supported by this software (add them here to support more of them)
     supported_languages.push_back("en-US");
     supported_languages.push_back("it");
@@ -25,6 +36,9 @@ Gui::Gui() {
 
     //converting it into its numerical id
     setMakeLanguage(*((u64*)(system_language_code.c_str())), &system_language);
+
+    //exiting set
+    setExit();
 
     #else
     system_language = DEFAULT_LANGUAGE;
@@ -101,4 +115,21 @@ Gui* Gui::getInstance() {
     }
 
     return instance;
+}
+
+void Gui::destroy() {
+    //dropping out all the left out states
+    while( !Gui::getInstance()->states.empty() ) Gui::getInstance()->dropState();
+    delete instance;
+    instance = nullptr;
+    is_initialized = false;
+
+    //destroying the langfile singleton
+    LangFile::destroy();
+
+    //shutting down romfs
+    romfsExit();
+
+    //destroying window
+    Window::getInstance()->destroy();
 }

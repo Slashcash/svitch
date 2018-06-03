@@ -41,7 +41,7 @@ DATA		:=	data
 INCLUDES	:=	include include/ext
 ABSOLUTE_INCLUDES := $(PORTLIBS)/include/freetype2
 EXEFS_SRC	:=	exefs_src
-#ROMFS	:=	romfs
+ROMFS	:=	romfs
 
 #---------------------------------------------------------------------------------
 # options for code generation
