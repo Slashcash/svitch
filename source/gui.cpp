@@ -32,14 +32,13 @@ Gui::Gui() {
 
     #ifndef EMULATOR
     //getting the system language
-    getSystemLanguage();
+    getSetLanguage();
 
     //converting it into its numerical id
     setMakeLanguage(*((u64*)(system_language_code.c_str())), &system_language);
 
     //exiting set
     setExit();
-
     #else
     system_language = DEFAULT_LANGUAGE;
     system_language_code = DEFAULT_LANGUAGECODE;
