@@ -7,6 +7,7 @@
 enum Error { //all the things that can go wrong in this software
     ERR_OUT_OF_MEMORY = 1,
     ERR_INITIALIZE_NS,
+    ERR_NS_NOT_FOUND,
     ERR_GET_APP_CONTROLDATA,
     ERR_OUTSIZE_TOO_SMALL,
     ERR_OPEN_STREAM,
