@@ -41,6 +41,9 @@ SaveFile::SaveFile(const u64 theTitleID, const u128 theUserID) {
 
     //retrieving some more savefile information
     getSaveFileInformation();
+    #ifndef EMULATOR
+    getUserInformation();
+    #endif
 }
 #endif
 
@@ -164,6 +167,65 @@ void SaveFile::getSaveFileInformation() {
     log_str_final << "Additional information found. " <<  "Title " << std::hex << title_id << " is " << title_name << ", " << title_author;
     writeToLog(log_str_final.str());
 }
+
+#ifndef EMULATOR
+void SaveFile::getUserInformation() {
+    //pretty much following the libnx's acc example
+    AccountProfile profile;
+    AccountUserData userdata;
+    AccountProfileBase profilebase;
+
+    char username[0x21];
+
+    memset(&userdata, 0, sizeof(userdata));
+    memset(&profilebase, 0, sizeof(profilebase));
+
+    //retrieving information on username
+    writeToLog("Retrieving account name informations");
+
+    writeToLog("Initializing acc");
+    Result res = accountInitialize();
+    if( R_FAILED(res) ) {
+        OPResult op_res(ERR_INITIALIZE_ACC, R_DESCRIPTION(res));
+        writeToLog(op_res, LogWriter::WARNING);
+        account_name = UNKNOWN_PARAMETER_STR;
+        return; //we have to return and this condition is not an error, just a warning
+    }
+
+    writeToLog("Get profile informations");
+    res = accountGetProfile(&profile, user_id);
+    if( R_FAILED(res) ) {
+        OPResult op_res(ERR_GET_USER_PROFILE, R_DESCRIPTION(res));
+        writeToLog(op_res, LogWriter::WARNING);
+        account_name = UNKNOWN_PARAMETER_STR;
+        accountExit();
+        return; //we have to return and this condition is not an error, just a warning
+    }
+
+    res = accountProfileGet(&profile, &userdata, &profilebase);
+    if( R_FAILED(res) ) {
+        OPResult op_res(ERR_GET_USER_PROFILE, R_DESCRIPTION(res));
+        writeToLog(op_res, LogWriter::WARNING);
+        account_name = UNKNOWN_PARAMETER_STR;
+        accountExit();
+        return; //we have to return and this condition is not an error, just a warning
+    }
+
+    if( strncmp(profilebase.username, "", sizeof(username)) == 0 ) {
+        OPResult op_res(ERR_GET_USER_PROFILE, R_DESCRIPTION(res));
+        writeToLog(op_res, LogWriter::WARNING);
+        account_name = UNKNOWN_PARAMETER_STR;
+        accountExit();
+        return; //we have to return and this condition is not an error, just a warning
+    }
+
+    memset(username,  0, sizeof(username));
+    strncpy(username, profilebase.username, sizeof(username)-1);//Even though profilebase.username usually has a NUL-terminator, don't assume it does for safety.
+
+    account_name = username;
+    writeToLog("The account name is "+account_name);
+}
+#endif
 
 #ifdef EMULATOR
 void SaveFile::getSaveFileInformationFromHeader(std::stringstream& theStringStream) {

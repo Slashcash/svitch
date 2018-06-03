@@ -112,10 +112,7 @@ void MainState::buildTitleInfo() {
 
     std::string user_id_temp_str;
     #ifdef EMULATOR
-    u128 temp_user_id_buffer = 69696969696969; //a random number really
-    std::ostringstream user_id_stream;
-    user_id_stream << LangFile::getInstance()->getValue("user") << ": " << std::hex << ((u64)(temp_user_id_buffer>>64)) << "/" << std::hex << ((u64)(temp_user_id_buffer));
-    user_id_temp_str = user_id_stream.str();
+    user_id_temp_str = "TEST";
     #else
     user_id_temp_str = LangFile::getInstance()->getValue("user") + ": " + savefiles[save_selected].getUserName();
     #endif

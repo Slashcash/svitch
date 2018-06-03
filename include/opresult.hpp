@@ -17,6 +17,7 @@ enum Error { //all the things that can go wrong in this software
     ERR_READ_ITERATOR,
     ERR_TOO_MANY_SAVEFILES,
     ERR_INITIALIZE_ACC,
+    ERR_GET_USER_PROFILE,
     ERR_GET_USERID,
     ERR_ACCOUNT_NOT_LOGGED,
     ERR_MOUNT_ROMFS,

@@ -30,6 +30,7 @@ class SaveFile : public LogWriter {
         #else
         u128 user_id;
         std::string mount_name;
+        std::string account_name;
         #endif
         u64 title_id; //the title id for this savefile
         std::string title_name; //the game title for this savefile
@@ -49,6 +50,7 @@ class SaveFile : public LogWriter {
         OPResult mount(const std::string& theMountName);
         OPResult unmount();
         OPResult commit();
+        void getUserInformation();
         #endif
         void getSaveFileInformation(); //this retrieves the savefile name and author from system
         std::ostringstream createSaveHeader() const;
