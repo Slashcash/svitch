@@ -1,20 +1,21 @@
 ## What is this?
-Svitch is a Nintendo Switch savefile extractor, it just scans your system searching for savefiles and lists them at startup, you can then export them to your sd card into a convenient file format called .svi
+Svitch is a Nintendo Switch savefile manager, it just scans your system searching for savefiles and lists them at startup, you can then export them to your sd card into a convenient file format called .svi. You can alternatively import an .svi back into your system
 
 ## The .svi file format
-After a succesful extraction you will find a .svi files into the *export* folder on your sd card named after the id of the game you extracted, this is nothing more than a glorified archive which contains your savefile and can be opened natively with every archive manager (such as WinZip, WinRar, 7Zip and so on).
+After a succesful extraction you will find a .svi files into the *saves* folder on your sd card named after the id of the game you extracted, this is nothing more than a glorified archive which contains your savefile and can be opened natively with every archive manager (such as WinZip, WinRar, 7Zip and so on).
 
 This archive will also contain a *svitch_saveheader.svh* file. It is not part of your savefile, it contains human-readable additional informations about the save itself and it will also be used by Svitch to import the save back in the system (as soon as the function will be ready).
 
-If you wish to import the .svi files back into your system with the use of a different tool you can easily decompress the archive, scrap away *svitch_saveheader.svh* and re-import it normally.
+If you wish to import the .svi files back into your system with the use of a different tool you can easily decompress the archive, scrap away *svitch_saveheader.svh* and re-import it.
 
 ## What this will do soon?
-Svitch will soon have a properly functioning importing function to reimport back your extracted saves. It will also feature a graphical ui instead of the current text-only interface. Svitch will hopefully become a full-fledged savefile manager for Nintendo Switch.
+Svitch will soon feature a graphical ui instead of the current text-only interface. Svitch will hopefully become a full-fledged savefile manager for Nintendo Switch.
 
 ## How can i use it?
 Just launch it as every other Nintendo Switch's homebrew, you can control it with:
-  * +/- scrolls through all the savefiles.
+  * left/right on the dpad scrolls through all the savefiles.
   * Y exports the savefile.
+  * X lets you choose from the .svi files found in the *saves* folder.  
   * B exits the software.
 
 ## Can i compile Svitch from source?
@@ -36,7 +37,7 @@ Compile the source with the command *make EMULATOR=1* and you will obtain a bina
 Svitch is still under **HEAVY TESTING**. As of now a lot of things can go wrong or don't work at all. I appreciate bug reporting: you can find additional informations about failures in a file called *log.txt* written in the software's root. This will help me debugging the error so please provide it when reporting.
 
 ## Disclaimer
-Svitch *will* operate on your save file partition, as of now it just reads it (without writing to it) but it is a dangerous operation in any way. It may result in lost or damaged savefiles. For this reason i suggest you to backup your saves with another tool before trying this, this is still in **TESTING** 
+Svitch *will* operate on your save file partition. It may result in lost or damaged savefiles. For this reason i suggest you to backup your saves with another tool before trying this, this is still in **TESTING** 
 
 # How can i download this?
 As of now the official Svitch's download location is its Github Release page.
