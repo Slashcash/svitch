@@ -245,7 +245,7 @@ void SaveFile::getSaveFileInformationFromHeader(std::stringstream& theStringStre
     newline_pos = theStringStream.str().find("\n", element_pos);
     value_pos = element_pos + HEADER_ID_STR.size() + HEADER_SEPARATOR.size();
     if( newline_pos == std::string::npos ) value_length = std::string::npos;
-    else value_length = newline_pos - element_pos - HEADER_ID_STR.size() - HEADER_SEPARATOR.size() - 1;
+    else value_length = newline_pos - element_pos - HEADER_ID_STR.size() - HEADER_SEPARATOR.size();
     std::string temp = theStringStream.str().substr(value_pos, value_length);
     title_id = std::strtoul(temp.c_str(), nullptr, 10);
 
@@ -255,7 +255,7 @@ void SaveFile::getSaveFileInformationFromHeader(std::stringstream& theStringStre
         newline_pos = theStringStream.str().find("\n", element_pos);
         value_pos = element_pos + HEADER_NAME_STR.size() + HEADER_SEPARATOR.size();
         if( newline_pos == std::string::npos ) value_length = std::string::npos;
-        else value_length = newline_pos - element_pos - HEADER_NAME_STR.size() - HEADER_SEPARATOR.size() - 1;
+        else value_length = newline_pos - element_pos - HEADER_NAME_STR.size() - HEADER_SEPARATOR.size();
         title_name = theStringStream.str().substr(value_pos, value_length);
     }
 
@@ -271,7 +271,7 @@ void SaveFile::getSaveFileInformationFromHeader(std::stringstream& theStringStre
         newline_pos = theStringStream.str().find("\n", element_pos);
         value_pos = element_pos + HEADER_AUTHOR_STR.size() + HEADER_SEPARATOR.size();
         if( newline_pos == std::string::npos ) value_length = std::string::npos;
-        else value_length = newline_pos - element_pos - HEADER_AUTHOR_STR.size() - HEADER_SEPARATOR.size() - 1;
+        else value_length = newline_pos - element_pos - HEADER_AUTHOR_STR.size() - HEADER_SEPARATOR.size();
         title_author = theStringStream.str().substr(value_pos, value_length);
     }
 
@@ -533,11 +533,37 @@ OPResult SaveFile::extractSVIToPath(const std::string& theSVIPath, const std::st
     std::ostringstream initial_stream;
     initial_stream << "Extracting " << theSVIPath << " to " << theDestinationPath;
 
+    //WHY THIS PURE C FUNCTION? BECAUSE SWITCH IS A BITCH
     writeToLog("Initializing the archive");
+    FILE* src = fopen(theSVIPath.c_str(), "rb");
+    if( src == NULL ) {
+        OPResult op_res(ERR_OPEN_STREAM);
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    fseek(src, 0, SEEK_END);
+    u64 file_size = ftell(src);
+    rewind(src);
+
+    const int BUFFER_SIZE = 0x5000;
+    size_t read_size;
+    char* buf = new char[BUFFER_SIZE];
+    std::string data;
+
+    while( (read_size = fread(buf, 1, BUFFER_SIZE, src)) > 0 ) data.append(buf, read_size);
+    delete [] buf;
+
+    if( data.size() != file_size ) {
+        OPResult op_res(ERR_READ_FILE);
+        writeToLog(op_res);
+        return op_res;
+    }
+
     //initializing an archive
     mz_zip_archive archive;
     mz_zip_zero_struct(&archive);
-    if( !mz_zip_reader_init_file(&archive, theSVIPath.c_str(), 0) ) {
+    if( !mz_zip_reader_init_mem(&archive, (void*)data.c_str(), file_size, 0) ) {
         OPResult op_res(ERR_INIT_ARCHIVE);
         writeToLog(op_res);
         return op_res;
@@ -548,9 +574,8 @@ OPResult SaveFile::extractSVIToPath(const std::string& theSVIPath, const std::st
     //scrolling through it
     for(unsigned int i = 0; i < file_num; i++) {
         mz_zip_reader_extract_iter_state* it = mz_zip_reader_extract_iter_new(&archive, i, 0); //creating the iterator
-        const int MAX_FILE_SIZE = 2*10^7; //hoping that 20mb will always be enough (?)
-        char* file_buffer = new char[MAX_FILE_SIZE];
-        size_t file_size = mz_zip_reader_extract_iter_read(it, file_buffer, MAX_FILE_SIZE); //reading the file
+        char* file_buffer = new char[it->file_stat.m_uncomp_size];
+        size_t file_size = mz_zip_reader_extract_iter_read(it, file_buffer, it->file_stat.m_uncomp_size); //reading the file
 
         //if it is a directory we create it
         if( it->file_stat.m_is_directory ) {

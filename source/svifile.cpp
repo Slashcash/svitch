@@ -18,17 +18,66 @@ void SVIFile::getInformations() {
     writeToLog(initial_stream.str(), 1);
 
     //we will now extract our headerfile into a string and read its information
-    size_t header_size = 0;
-    char* buffer;
+    //we should use this painful c approach because switch is a bitch
 
-    mz_zip_error mzip_error;
-    writeToLog("Reading the header");
-    if( (buffer = (char*)mz_zip_extract_archive_file_to_heap_v2(file_path.c_str(), SaveFile::DEFAULT_SAVEHEADER_NAME.c_str(), NULL, &header_size, 0, &mzip_error)) == NULL ) {
+    //reading the entire archive :(
+    writeToLog("Validating the archive");
+    FILE* src = fopen(file_path.c_str(), "rb");
+    if( src == NULL ) {
         is_valid = false;
         title_id = 0;
         title_name = SaveFile::UNKNOWN_PARAMETER_STR;
         title_author = SaveFile::UNKNOWN_PARAMETER_STR;
-        OPResult op_res(ERR_NO_SAVEHEADER, mzip_error);
+        OPResult op_res(ERR_OPEN_STREAM);
+        writeToLog(op_res);
+        return;
+    }
+
+    fseek(src, 0, SEEK_END);
+    u64 file_size = ftell(src);
+    rewind(src);
+
+    const int BUFFER_SIZE = 0x5000;
+    size_t read_size;
+    char* buf = new char[BUFFER_SIZE];
+    std::string data;
+
+    while( (read_size = fread(buf, 1, BUFFER_SIZE, src)) > 0 ) data.append(buf, read_size);
+    delete [] buf;
+
+    if( data.size() != file_size ) {
+        is_valid = false;
+        title_id = 0;
+        title_name = SaveFile::UNKNOWN_PARAMETER_STR;
+        title_author = SaveFile::UNKNOWN_PARAMETER_STR;
+        OPResult op_res(ERR_READ_FILE);
+        writeToLog(op_res);
+        ;return;
+    }
+
+    //initializing an archive
+    mz_zip_archive archive;
+    mz_zip_zero_struct(&archive);
+    if( !mz_zip_reader_init_mem(&archive, (void*)data.c_str(), file_size, 0) ) {
+        is_valid = false;
+        title_id = 0;
+        title_name = SaveFile::UNKNOWN_PARAMETER_STR;
+        title_author = SaveFile::UNKNOWN_PARAMETER_STR;
+        OPResult op_res(ERR_INIT_ARCHIVE);
+        writeToLog(op_res);
+        return;
+    }
+
+    size_t header_size = 0;
+    char* buffer;
+
+    writeToLog("Reading the header");
+    if( (buffer = (char*)mz_zip_reader_extract_file_to_heap(&archive, SaveFile::DEFAULT_SAVEHEADER_NAME.c_str(), &header_size, 0)) == NULL ) {
+        is_valid = false;
+        title_id = 0;
+        title_name = SaveFile::UNKNOWN_PARAMETER_STR;
+        title_author = SaveFile::UNKNOWN_PARAMETER_STR;
+        OPResult op_res(ERR_NO_SAVEHEADER);
         writeToLog(op_res);
         return;
     }
