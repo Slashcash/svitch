@@ -25,6 +25,7 @@ class SaveFile : public LogWriter {
         static const std::string HEADER_ID_STR;
         static const std::string HEADER_NAME_STR;
         static const std::string HEADER_AUTHOR_STR;
+        static const std::string HEADER_EXTRACTED_STR;
 
         #ifdef EMULATOR
         std::string folder_path;

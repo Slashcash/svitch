@@ -12,6 +12,8 @@
 #include <string.h>
 #include <dirent.h>
 
+#include "options.cpp"
+
 #ifdef EMULATOR
 const std::string SaveFile::DEFAULT_SAVEPATH = "sdmc:/.saves/";
 #else
@@ -24,6 +26,7 @@ const std::string SaveFile::UNKNOWN_PARAMETER_STR = "Unknown";
 const std::string SaveFile::HEADER_ID_STR = "id";
 const std::string SaveFile::HEADER_NAME_STR = "name";
 const std::string SaveFile::HEADER_AUTHOR_STR = "author";
+const std::string SaveFile::HEADER_EXTRACTED_STR = "extracted_with";
 
 #ifdef EMULATOR
 SaveFile::SaveFile(const std::string& thePath) {
@@ -760,7 +763,8 @@ std::ostringstream SaveFile::createSaveHeader() const {
 
     buffer <<   HEADER_ID_STR << HEADER_SEPARATOR << title_id << "\n" <<
                 HEADER_NAME_STR << HEADER_SEPARATOR << title_name << "\n" <<
-                HEADER_AUTHOR_STR << HEADER_SEPARATOR << title_author << "\n";
+                HEADER_AUTHOR_STR << HEADER_SEPARATOR << title_author << "\n" <<
+                HEADER_EXTRACTED_STR << HEADER_SEPARATOR << APP;
 
     return buffer;
 }
