@@ -19,6 +19,7 @@ class SaveFile : public LogWriter {
         static const std::string DEFAULT_MOUNTNAME;
         #endif
         static const std::string DEFAULT_SAVEHEADER_NAME;
+        static const std::string DEFAULT_ICON_NAME;
         static const std::string HEADER_SEPARATOR;
         static const std::string UNKNOWN_PARAMETER_STR;
         static const std::string HEADER_ID_STR;
@@ -35,6 +36,7 @@ class SaveFile : public LogWriter {
         u64 title_id; //the title id for this savefile
         std::string title_name; //the game title for this savefile
         std::string title_author; //the game author of this savefile
+        std::string icon; //here we will store the icon as binary data (in jpeg)
 
         #ifdef EMULATOR
         SaveFile(const std::string& thePath);
@@ -65,11 +67,11 @@ class SaveFile : public LogWriter {
             u64 getTitleID() const { return title_id; }
             std::string getTitleName() const { return title_name; }
             std::string getTitleAuthor() const { return title_author; }
+            std::string getIcon() const { return icon; }
             #ifndef EMULATOR
             u128 getUserID() const { return user_id; }
             std::string getUserName() const { return account_name; }
             #endif
-
 
             static std::vector<SaveFile> getAllSaveFiles(); //gets all the savefiles found on the system
             OPResult extractToSVIFile(const std::string& theSVIPath);

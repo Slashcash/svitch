@@ -18,6 +18,7 @@ const std::string SaveFile::DEFAULT_SAVEPATH = "sdmc:/.saves/";
 const std::string SaveFile::DEFAULT_MOUNTNAME = "svitch_save";
 #endif
 const std::string SaveFile::DEFAULT_SAVEHEADER_NAME = "svitch_saveheader.svh";
+const std::string SaveFile::DEFAULT_ICON_NAME = "svitch_icon.jpeg";
 const std::string SaveFile::HEADER_SEPARATOR = "=";
 const std::string SaveFile::UNKNOWN_PARAMETER_STR = "Unknown";
 const std::string SaveFile::HEADER_ID_STR = "id";
@@ -134,6 +135,9 @@ void SaveFile::getSaveFileInformation() {
     strncpy(author, buf->nacp.lang[langentry].author, sizeof(author)-1);
     title_author = author;
 
+    //getting the savefile icon
+    icon.append((char*)buf->icon, outsize - sizeof(buf->nacp));
+
     delete buf;
     nsExit();
     #else
@@ -161,6 +165,19 @@ void SaveFile::getSaveFileInformation() {
     file_buffer << file_stream.rdbuf();
 
     getSaveFileInformationFromHeader(file_buffer);
+
+    //gettig the icon
+    writeToLog("Getting the save icon");
+    std::ifstream icon_stream(DEFAULT_ICON_NAME.c_str(), std::ios::in | std::ios::binary);
+    if( !icon_stream.is_open() )  {
+        OPResult op_res(ERR_OPEN_STREAM);
+        writeToLog(op_res, LogWriter::WARNING);
+        return;
+    }
+
+    std::ostringstream temp_icon;
+    temp_icon << icon_stream.rdbuf();
+    icon = temp_icon.str();
     #endif
 
     std::ostringstream log_str_final;
@@ -668,6 +685,19 @@ OPResult SaveFile::extractToSVIFile(const std::string& theSVIPath) {
         #endif
         mz_zip_end(&archive);
         return op_res;
+    }
+
+    writeToLog("Writing the icon into the archive");
+    if( icon.empty() ) {
+        OPResult op_res(ERR_NO_SAVE_ICON);
+        writeToLog(op_res, LogWriter::WARNING); //this is not a tragic error so we'll continue anyway
+    }
+
+    else {
+        if( !mz_zip_writer_add_mem(&archive, DEFAULT_ICON_NAME.c_str(), icon.c_str(), icon.size(), MZ_DEFAULT_COMPRESSION) ) {
+            OPResult op_res(ERR_WRITE_FILE);
+            writeToLog(op_res, LogWriter::WARNING); //not tragic so we'll continue
+        }
     }
 
     op_res = extractPathToSVI(archive, base_path);
