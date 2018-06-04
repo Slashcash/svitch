@@ -12,12 +12,12 @@ ImportState::ImportState(const SaveFile& theSaveFile) : savefile(theSaveFile) {
     //texts initialization
     no_importing.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
     no_importing.setCharacterSize(20);
-    no_importing.setMsg(LangFile::getInstance()->getValue("no_importing")+" "+savefile.getTitleName());
+    no_importing.setMsg(LangFile::getInstance()->getValue("no_importing")+" "+savefile.getBestSuitableName(Gui::getInstance()->getSystemLanguage()));
     no_importing.setPosition( (Window::getInstance()->getSize().x / 2) - (no_importing.getSize().x /2), 500 );
 
     importing_for.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
     importing_for.setCharacterSize(20);
-    importing_for.setMsg(LangFile::getInstance()->getValue("importing_for")+" "+savefile.getTitleName());
+    importing_for.setMsg(LangFile::getInstance()->getValue("importing_for")+" "+savefile.getBestSuitableName(Gui::getInstance()->getSystemLanguage()));
     importing_for.setPosition( (Window::getInstance()->getSize().x / 2) - (importing_for.getSize().x /2), 150 );
 
     file_found.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
@@ -101,10 +101,10 @@ ImportState::ImportState(const SaveFile& theSaveFile) : savefile(theSaveFile) {
 void ImportState::buildTitleInfo() {
     scene.detachFromLayer(&no_importing, 0);
 
-    game_title.setMsg(savefiles_folder[save_selected].getTitleName());
+    game_title.setMsg(savefiles_folder[save_selected].getBestSuitableName(Gui::getInstance()->getSystemLanguage()));
     game_title.setPosition( (Window::getInstance()->getSize().x / 2) - (game_title.getSize().x /2), (Window::getInstance()->getSize().y / 2) - (game_title.getSize().y / 2) );
 
-    game_author.setMsg(savefiles_folder[save_selected].getTitleAuthor());
+    game_author.setMsg(savefiles_folder[save_selected].getBestSuitableAuthor(Gui::getInstance()->getSystemLanguage()));
     game_author.setPosition( (game_title.getSize().x / 2) - (game_author.getSize().x / 2), game_title.getSize().y + 10 );
 
     file_info.setMsg(savefiles_folder[save_selected].getPath());

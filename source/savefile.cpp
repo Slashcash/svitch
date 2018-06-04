@@ -59,7 +59,6 @@ void SaveFile::getSaveFileInformation() {
     writeToLog(log_str.str(), 1);
 
     NsApplicationControlData* buf = nullptr;
-    unsigned int langentry = 1; //this is the id for the english language
     size_t outsize=0;
 
     char name[0x201];
@@ -69,8 +68,8 @@ void SaveFile::getSaveFileInformation() {
     if( buf == nullptr ) { //if new fails for some reason
         OPResult op_res(ERR_OUT_OF_MEMORY, LibnxError_OutOfMemory);
         writeToLog(op_res, LogWriter::WARNING);
-        title_name = UNKNOWN_PARAMETER_STR;
-        title_author = UNKNOWN_PARAMETER_STR;
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++) title_names.push_back("");
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++) title_authors.push_back("");
         return; //we have to return and this condition is not an error, just a warning
     }
 
@@ -83,8 +82,8 @@ void SaveFile::getSaveFileInformation() {
         OPResult op_res(ERR_INITIALIZE_NS, R_DESCRIPTION(res));
         writeToLog(op_res, LogWriter::WARNING);
         delete buf;
-        title_name = UNKNOWN_PARAMETER_STR;
-        title_author = UNKNOWN_PARAMETER_STR;
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++) title_names.push_back("");
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++) title_authors.push_back("");
         return; //we have to return and this condition is not an error, just a warning
     }
 
@@ -94,8 +93,8 @@ void SaveFile::getSaveFileInformation() {
         OPResult op_res(ERR_GET_APP_CONTROLDATA, R_DESCRIPTION(res));
         writeToLog(op_res, LogWriter::WARNING);
         delete buf;
-        title_name = UNKNOWN_PARAMETER_STR;
-        title_author = UNKNOWN_PARAMETER_STR;
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++) title_names.push_back("");
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++) title_authors.push_back("");
         nsExit();
         return; //we have to return and this condition is not an error, just a warning
     }
@@ -104,39 +103,16 @@ void SaveFile::getSaveFileInformation() {
         OPResult op_res(ERR_OUTSIZE_TOO_SMALL);
         writeToLog(op_res, LogWriter::WARNING);
         delete buf;
-        title_name = UNKNOWN_PARAMETER_STR;
-        title_author = UNKNOWN_PARAMETER_STR;
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++) title_names.push_back("");
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++) title_authors.push_back("");
         nsExit();
         return; //we have to return and this condition is not an error, just a warning
     }
 
-    if( strncmp(buf->nacp.lang[langentry].name, "", sizeof(name)) == 0 ) {
-        OPResult op_res(ERR_NS_NOT_FOUND);
-        writeToLog(op_res, LogWriter::WARNING);
-        delete buf;
-        title_name = UNKNOWN_PARAMETER_STR;
-        title_author = UNKNOWN_PARAMETER_STR;
-        nsExit();
-        return; //we have to return and this condition is not an error, just a warning
+    for(unsigned int i = 0; i < LANGUAGE_NUM; i++) {
+        title_names.push_back(buf->nacp.lang[i].name);
+        title_authors.push_back(buf->nacp.lang[i].authors);
     }
-
-    memset(name, 0, sizeof(name)); //do not assume it is null-terminated
-    strncpy(name, buf->nacp.lang[langentry].name, sizeof(name)-1);
-    title_name = name;
-
-    if( strncmp(buf->nacp.lang[langentry].author, "", sizeof(author)) == 0 ) {
-        OPResult op_res(ERR_NS_NOT_FOUND);
-        writeToLog(op_res, LogWriter::WARNING);
-        delete buf;
-        title_name = UNKNOWN_PARAMETER_STR;
-        title_author = UNKNOWN_PARAMETER_STR;
-        nsExit();
-        return; //we have to return and this condition is not an error, just a warning
-    }
-
-    memset(author, 0, sizeof(author)); //do not assume it is null-terminated
-    strncpy(author, buf->nacp.lang[langentry].author, sizeof(author)-1);
-    title_author = author;
 
     //getting the savefile icon
     icon.append((char*)buf->icon, outsize - sizeof(buf->nacp));
@@ -160,8 +136,8 @@ void SaveFile::getSaveFileInformation() {
         OPResult op_res(ERR_OPEN_STREAM);
         writeToLog(op_res, LogWriter::WARNING);
         title_id = 0;
-        title_name = UNKNOWN_PARAMETER_STR;
-        title_author = UNKNOWN_PARAMETER_STR;
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++) title_names.push_back("");
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++) title_authors.push_back("");
     }
 
     std::stringstream file_buffer;
@@ -183,8 +159,17 @@ void SaveFile::getSaveFileInformation() {
     icon = temp_icon.str();
     #endif
 
+    //SEARCHING FOR THE ENGLISH LANGUAGES TO WRITE THE LOG CORRECTLY
     std::ostringstream log_str_final;
-    log_str_final << "Additional information found. " <<  "Title " << std::hex << title_id << " is " << title_name << ", " << title_author;
+    std::string log_temp_title;
+    std::string log_temp_author;
+    if( title_names[1].empty() ) log_temp_title = "NO_ENGLISH";
+    else log_temp_title = title_names[1];
+
+    if( title_authors[1].empty() ) log_temp_author = "NO_ENGLISH";
+    else log_temp_author = title_authors[1];
+
+    log_str_final << "Additional information found. " <<  "Title " << std::hex << title_id << " is " << log_temp_title << ", " << log_temp_author;
     writeToLog(log_str_final.str());
 }
 
@@ -270,35 +255,35 @@ void SaveFile::getSaveFileInformationFromHeader(std::stringstream& theStringStre
     title_id = std::strtoul(temp.c_str(), nullptr, 10);
 
     //searching for the name in the header
-    element_pos = theStringStream.str().find(HEADER_NAME_STR);
-    if( element_pos != std::string::npos ) {
-        newline_pos = theStringStream.str().find("\n", element_pos);
-        value_pos = element_pos + HEADER_NAME_STR.size() + HEADER_SEPARATOR.size();
-        if( newline_pos == std::string::npos ) value_length = std::string::npos;
-        else value_length = newline_pos - element_pos - HEADER_NAME_STR.size() - HEADER_SEPARATOR.size();
-        title_name = theStringStream.str().substr(value_pos, value_length);
-    }
+    for(unsigned int i = 0; i < LANGUAGE_NUM; i++) {
+        std::ostringstream NAME_TO_FIND;
+        NAME_TO_FIND << HEADER_NAME_STR << "_" << i;
 
-    else {
-        OPResult op_res(ERR_INVALID_SAVEHEADER);
-        writeToLog(op_res, LogWriter::WARNING);
-        title_name = UNKNOWN_PARAMETER_STR;
-    }
+        std::ostringstream AUTHOR_TO_FIND;
+        AUTHOR_TO_FIND << HEADER_AUTHOR_STR << "_" << i;
 
-    //searching for the author in the header
-    element_pos = theStringStream.str().find(HEADER_AUTHOR_STR);
-    if( element_pos != std::string::npos ) {
-        newline_pos = theStringStream.str().find("\n", element_pos);
-        value_pos = element_pos + HEADER_AUTHOR_STR.size() + HEADER_SEPARATOR.size();
-        if( newline_pos == std::string::npos ) value_length = std::string::npos;
-        else value_length = newline_pos - element_pos - HEADER_AUTHOR_STR.size() - HEADER_SEPARATOR.size();
-        title_author = theStringStream.str().substr(value_pos, value_length);
-    }
+        element_pos = theStringStream.str().find(NAME_TO_FIND.str());
+        if( element_pos != std::string::npos ) {
+            newline_pos = theStringStream.str().find("\n", element_pos);
+            value_pos = element_pos + NAME_TO_FIND.str().size() + HEADER_SEPARATOR.size();
+            if( newline_pos == std::string::npos ) value_length = std::string::npos;
+            else value_length = newline_pos - element_pos - NAME_TO_FIND.str().size() - HEADER_SEPARATOR.size();
+            title_names.push_back(theStringStream.str().substr(value_pos, value_length));
+        }
 
-    else {
-        OPResult op_res(ERR_INVALID_SAVEHEADER);
-        writeToLog(op_res, LogWriter::WARNING);
-        title_author = UNKNOWN_PARAMETER_STR;
+        else title_names.push_back("");
+
+        //searching for the author in the header
+        element_pos = theStringStream.str().find(AUTHOR_TO_FIND.str());
+        if( element_pos != std::string::npos ) {
+            newline_pos = theStringStream.str().find("\n", element_pos);
+            value_pos = element_pos + AUTHOR_TO_FIND.str().size() + HEADER_SEPARATOR.size();
+            if( newline_pos == std::string::npos ) value_length = std::string::npos;
+            else value_length = newline_pos - element_pos - AUTHOR_TO_FIND.str().size() - HEADER_SEPARATOR.size();
+            title_authors.push_back(theStringStream.str().substr(value_pos, value_length));
+        }
+
+        else title_authors.push_back("");
     }
 }
 #endif
@@ -761,10 +746,20 @@ OPResult SaveFile::extractToSVIFile(const std::string& theSVIPath) {
 std::ostringstream SaveFile::createSaveHeader() const {
     std::ostringstream buffer;
 
-    buffer <<   HEADER_ID_STR << HEADER_SEPARATOR << title_id << "\n" <<
-                HEADER_NAME_STR << HEADER_SEPARATOR << title_name << "\n" <<
-                HEADER_AUTHOR_STR << HEADER_SEPARATOR << title_author << "\n" <<
-                HEADER_EXTRACTED_STR << HEADER_SEPARATOR << APP;
+    buffer <<               HEADER_ID_STR << HEADER_SEPARATOR << title_id << "\n"; //writing id
+    for(unsigned int i = 0; i < LANGUAGE_NUM; i++) { //writing names
+        if( !title_names[i].empty() ) {
+            buffer <<       HEADER_NAME_STR << "_" << i << HEADER_SEPARATOR << title_names[i] << "\n";
+        }
+    }
+
+    for(unsigned int i = 0; i < LANGUAGE_NUM; i++) { //writing names
+        if( !title_authors[i].empty() ) {
+            buffer <<       HEADER_AUTHOR_STR << "_" << i << HEADER_SEPARATOR << title_authors[i] << "\n";
+        }
+    }
+
+    buffer <<               HEADER_EXTRACTED_STR << HEADER_SEPARATOR << APP;
 
     return buffer;
 }
@@ -877,4 +872,60 @@ OPResult SaveFile::importFromSVIFile(const SVIFile& theSVIFile) {
 
     writeToLog("Import operation SUCCESS");
     return OPResult(OPResult::SUCCESS);
+}
+
+std::string SaveFile::getBestSuitableName(const s32 theLanguage) const {
+    if( theLanguage >= LANGUAGE_NUM ) return "UNKNOWN";
+
+    //converting theLanguage into the vector index code (why you are so stupid Nintendo?)
+    int index;
+    if( theLanguage == 0 ) index = 2; //JAPANESE
+    else if( theLanguage == 1 ) index = 0; //AMERICAN ENGLISH
+    else if( theLanguage == 2 ) index = 3; //FRENCH
+    else if( theLanguage == 3 ) index = 4; //GERMAN
+    else if( theLanguage == 4 ) index = 7; //ITALIAN
+    else if( theLanguage == 5 ) index = 6; //SPANISH
+    else if( theLanguage == 6 ) index = 14; //CHINESE
+    else if( theLanguage == 7 ) index = 12; //KOREAN
+    else if( theLanguage == 8 ) index = 8; //DUTCH
+    else if( theLanguage == 9 ) index = 10; //PORTUGUESE
+    else if( theLanguage == 10 ) index = 11; //RUSSIAN
+    else index = 0; //THERE ARE OTHER LANGUAGES BUT I'M SO BORED AND NOBODY WILL USE THIS ANYWAY, IF SOME TAIWANESE PEOPLE NEEDS THIS YOU ARE FREE TO CONTACT ME
+
+    if( !title_names[index].empty() ) return title_names[index]; //if we have a string for the language we return it
+
+    else
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++)
+            if( !title_names[i].empty() )
+                return title_names[i];
+
+    return "UNKNOWN";
+}
+
+std::string SaveFile::getBestSuitableAuthor(const s32 theLanguage) const {
+    if( theLanguage >= LANGUAGE_NUM ) return "UNKNOWN";
+
+    //converting theLanguage into the vector index code (why you are so stupid Nintendo?)
+    int index;
+    if( theLanguage == 0 ) index = 2; //JAPANESE
+    else if( theLanguage == 1 ) index = 0; //AMERICAN ENGLISH
+    else if( theLanguage == 2 ) index = 3; //FRENCH
+    else if( theLanguage == 3 ) index = 4; //GERMAN
+    else if( theLanguage == 4 ) index = 7; //ITALIAN
+    else if( theLanguage == 5 ) index = 6; //SPANISH
+    else if( theLanguage == 6 ) index = 14; //CHINESE
+    else if( theLanguage == 7 ) index = 12; //KOREAN
+    else if( theLanguage == 8 ) index = 8; //DUTCH
+    else if( theLanguage == 9 ) index = 10; //PORTUGUESE
+    else if( theLanguage == 10 ) index = 11; //RUSSIAN
+    else index = 0; //THERE ARE OTHER LANGUAGES BUT I'M SO BORED AND NOBODY WILL USE THIS ANYWAY, IF SOME TAIWANESE PEOPLE NEEDS THIS YOU ARE FREE TO CONTACT ME
+
+    if( !title_authors[index].empty() ) return title_authors[index]; //if we have a string for the language we return it
+
+    else
+        for(unsigned int i = 0; i < LANGUAGE_NUM; i++)
+            if( !title_authors[i].empty() )
+                return title_authors[i];
+
+    return "UNKNOWN";
 }

@@ -26,8 +26,8 @@ void SVIFile::getInformations() {
     if( src == NULL ) {
         is_valid = false;
         title_id = 0;
-        title_name = SaveFile::UNKNOWN_PARAMETER_STR;
-        title_author = SaveFile::UNKNOWN_PARAMETER_STR;
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) title_names.push_back("");
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) title_authors.push_back("");
         OPResult op_res(ERR_OPEN_STREAM);
         writeToLog(op_res);
         return;
@@ -48,8 +48,8 @@ void SVIFile::getInformations() {
     if( data.size() != file_size ) {
         is_valid = false;
         title_id = 0;
-        title_name = SaveFile::UNKNOWN_PARAMETER_STR;
-        title_author = SaveFile::UNKNOWN_PARAMETER_STR;
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) title_names.push_back("");
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) title_authors.push_back("");
         OPResult op_res(ERR_READ_FILE);
         writeToLog(op_res);
         ;return;
@@ -61,8 +61,8 @@ void SVIFile::getInformations() {
     if( !mz_zip_reader_init_mem(&archive, (void*)data.c_str(), file_size, 0) ) {
         is_valid = false;
         title_id = 0;
-        title_name = SaveFile::UNKNOWN_PARAMETER_STR;
-        title_author = SaveFile::UNKNOWN_PARAMETER_STR;
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) title_names.push_back("");
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) title_authors.push_back("");
         OPResult op_res(ERR_INIT_ARCHIVE);
         writeToLog(op_res);
         return;
@@ -75,8 +75,8 @@ void SVIFile::getInformations() {
     if( (buffer = (char*)mz_zip_reader_extract_file_to_heap(&archive, SaveFile::DEFAULT_SAVEHEADER_NAME.c_str(), &header_size, 0)) == NULL ) {
         is_valid = false;
         title_id = 0;
-        title_name = SaveFile::UNKNOWN_PARAMETER_STR;
-        title_author = SaveFile::UNKNOWN_PARAMETER_STR;
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) title_names.push_back("");
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) title_authors.push_back("");
         OPResult op_res(ERR_NO_SAVEHEADER);
         writeToLog(op_res);
         return;
@@ -98,8 +98,8 @@ void SVIFile::getInformations() {
         OPResult op_res(ERR_INVALID_SAVEHEADER);
         writeToLog(op_res);
         title_id = 0;
-        title_name = SaveFile::UNKNOWN_PARAMETER_STR;
-        title_author = SaveFile::UNKNOWN_PARAMETER_STR;
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) title_names.push_back("");
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) title_authors.push_back("");
         is_valid = false;
         return;
     }
@@ -112,39 +112,49 @@ void SVIFile::getInformations() {
     title_id = std::strtoul(temp.c_str(), nullptr, 10);
 
     //searching for the name in the header
-    element_pos = str_buffer.find(SaveFile::HEADER_NAME_STR);
-    if( element_pos != std::string::npos ) {
-        newline_pos = str_buffer.find("\n", element_pos);
-        value_pos = element_pos + SaveFile::HEADER_NAME_STR.size() + SaveFile::HEADER_SEPARATOR.size();
-        if( newline_pos == std::string::npos ) value_length = std::string::npos;
-        else value_length = newline_pos - element_pos - SaveFile::HEADER_NAME_STR.size() - SaveFile::HEADER_SEPARATOR.size();
-        title_name = str_buffer.substr(value_pos, value_length);
+    for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) {
+        std::ostringstream NAME_TO_FIND;
+        NAME_TO_FIND << SaveFile::HEADER_NAME_STR << "_" << i;
+
+        std::ostringstream AUTHOR_TO_FIND;
+        AUTHOR_TO_FIND << SaveFile::HEADER_AUTHOR_STR << "_" << i;
+
+        element_pos = str_buffer.find(NAME_TO_FIND.str());
+        if( element_pos != std::string::npos ) {
+            newline_pos = str_buffer.find("\n", element_pos);
+            value_pos = element_pos + NAME_TO_FIND.str().size() + SaveFile::HEADER_SEPARATOR.size();
+            if( newline_pos == std::string::npos ) value_length = std::string::npos;
+            else value_length = newline_pos - element_pos - NAME_TO_FIND.str().size() - SaveFile::HEADER_SEPARATOR.size();
+            title_names.push_back(str_buffer.substr(value_pos, value_length));
+        }
+
+        else title_names.push_back("");
+
+        //searching for the author in the header
+        element_pos = str_buffer.find(AUTHOR_TO_FIND.str());
+        if( element_pos != std::string::npos ) {
+            newline_pos = str_buffer.find("\n", element_pos);
+            value_pos = element_pos + AUTHOR_TO_FIND.str().size() + SaveFile::HEADER_SEPARATOR.size();
+            if( newline_pos == std::string::npos ) value_length = std::string::npos;
+            else value_length = newline_pos - element_pos - AUTHOR_TO_FIND.str().size() - SaveFile::HEADER_SEPARATOR.size();
+            title_authors.push_back(str_buffer.substr(value_pos, value_length));
+        }
+
+        else title_authors.push_back("");
     }
 
-    else {
-        OPResult op_res(ERR_INVALID_SAVEHEADER);
-        writeToLog(op_res, LogWriter::WARNING);
-        title_name = SaveFile::UNKNOWN_PARAMETER_STR;
-    }
-    //searching for the author in the header
-    element_pos = str_buffer.find(SaveFile::HEADER_AUTHOR_STR);
-    if( element_pos != std::string::npos ) {
-        newline_pos = str_buffer.find("\n", element_pos);
-        value_pos = element_pos + SaveFile::HEADER_AUTHOR_STR.size() + SaveFile::HEADER_SEPARATOR.size();
-        if( newline_pos == std::string::npos ) value_length = std::string::npos;
-        else value_length = newline_pos - element_pos - SaveFile::HEADER_AUTHOR_STR.size() - SaveFile::HEADER_SEPARATOR.size();
-        title_author = str_buffer.substr(value_pos, value_length);
-    }
+    //SEARCHING FOR THE ENGLISH LANGUAGES TO WRITE THE LOG CORRECTLY
+    std::ostringstream log_str_final;
+    std::string log_temp_title;
+    std::string log_temp_author;
+    if( title_names[1].empty() ) log_temp_title = "NO_ENGLISH";
+    else log_temp_title = title_names[1];
 
-    else {
-        OPResult op_res(ERR_INVALID_SAVEHEADER);
-        writeToLog(op_res, LogWriter::WARNING);
-        title_author = SaveFile::UNKNOWN_PARAMETER_STR;
-    }
+    if( title_authors[1].empty() ) log_temp_author = "NO_ENGLISH";
+    else log_temp_author = title_authors[1];
 
-    std::ostringstream final_stream;
-    final_stream << ".svi loading SUCCESS, " << file_path << " is " << title_id <<", " << title_name << " - " << title_author;
-    writeToLog(final_stream.str());
+    log_str_final << "Additional information found. " <<  "Title " << std::hex << title_id << " is " << log_temp_title << ", " << log_temp_author;
+    writeToLog(log_str_final.str());
 }
 
 std::vector<SVIFile> SVIFile::getAllSVIInPath(const std::string& thePath) {
@@ -184,4 +194,60 @@ std::vector<SVIFile> SVIFile::getAllSVIInPath(const std::string& thePath) {
     std::ostringstream final_stream;
     final_stream << "SVI file scan SUCCESS. Found " << buffer.size() << " files";
     return buffer;
+}
+
+std::string SVIFile::getBestSuitableName(const s32 theLanguage) const {
+    if( theLanguage >= SaveFile::LANGUAGE_NUM ) return "UNKNOWN";
+
+    //converting theLanguage into the vector index code (why you are so stupid Nintendo?)
+    int index;
+    if( theLanguage == 0 ) index = 2; //JAPANESE
+    else if( theLanguage == 1 ) index = 0; //AMERICAN ENGLISH
+    else if( theLanguage == 2 ) index = 3; //FRENCH
+    else if( theLanguage == 3 ) index = 4; //GERMAN
+    else if( theLanguage == 4 ) index = 7; //ITALIAN
+    else if( theLanguage == 5 ) index = 6; //SPANISH
+    else if( theLanguage == 6 ) index = 14; //CHINESE
+    else if( theLanguage == 7 ) index = 12; //KOREAN
+    else if( theLanguage == 8 ) index = 8; //DUTCH
+    else if( theLanguage == 9 ) index = 10; //PORTUGUESE
+    else if( theLanguage == 10 ) index = 11; //RUSSIAN
+    else index = 0; //THERE ARE OTHER LANGUAGES BUT I'M SO BORED AND NOBODY WILL USE THIS ANYWAY, IF SOME TAIWANESE PEOPLE NEEDS THIS YOU ARE FREE TO CONTACT ME
+
+    if( !title_names[index].empty() ) return title_names[index]; //if we have a string for the language we return it
+
+    else
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++)
+            if( !title_names[i].empty() )
+                return title_names[i];
+
+    return "UNKNOWN";
+}
+
+std::string SVIFile::getBestSuitableAuthor(const s32 theLanguage) const {
+    if( theLanguage >= SaveFile::LANGUAGE_NUM ) return "UNKNOWN";
+
+    //converting theLanguage into the vector index code (why you are so stupid Nintendo?)
+    int index;
+    if( theLanguage == 0 ) index = 2; //JAPANESE
+    else if( theLanguage == 1 ) index = 0; //AMERICAN ENGLISH
+    else if( theLanguage == 2 ) index = 3; //FRENCH
+    else if( theLanguage == 3 ) index = 4; //GERMAN
+    else if( theLanguage == 4 ) index = 7; //ITALIAN
+    else if( theLanguage == 5 ) index = 6; //SPANISH
+    else if( theLanguage == 6 ) index = 14; //CHINESE
+    else if( theLanguage == 7 ) index = 12; //KOREAN
+    else if( theLanguage == 8 ) index = 8; //DUTCH
+    else if( theLanguage == 9 ) index = 10; //PORTUGUESE
+    else if( theLanguage == 10 ) index = 11; //RUSSIAN
+    else index = 0; //THERE ARE OTHER LANGUAGES BUT I'M SO BORED AND NOBODY WILL USE THIS ANYWAY, IF SOME TAIWANESE PEOPLE NEEDS THIS YOU ARE FREE TO CONTACT ME
+
+    if( !title_authors[index].empty() ) return title_authors[index]; //if we have a string for the language we return it
+
+    else
+        for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++)
+            if( !title_authors[i].empty() )
+                return title_authors[i];
+
+    return "UNKNOWN";
 }

@@ -35,9 +35,10 @@ class SaveFile : public LogWriter {
         std::string account_name;
         #endif
         u64 title_id; //the title id for this savefile
-        std::string title_name; //the game title for this savefile
-        std::string title_author; //the game author of this savefile
+        std::vector<std::string> title_names; //the game title for this savefile
+        std::vector<std::string> title_authors; //the game author of this savefile
         std::string icon; //here we will store the icon as binary data (in jpeg)
+        static const unsigned int LANGUAGE_NUM = 16;
 
         #ifdef EMULATOR
         SaveFile(const std::string& thePath);
@@ -66,8 +67,10 @@ class SaveFile : public LogWriter {
 
         public:
             u64 getTitleID() const { return title_id; }
-            std::string getTitleName() const { return title_name; }
-            std::string getTitleAuthor() const { return title_author; }
+            std::vector<std::string> getTitleNames() const { return title_names; }
+            std::vector<std::string> getTitleAuthors() const { return title_authors; }
+            std::string getBestSuitableName(const s32 theLanguage) const;
+            std::string getBestSuitableAuthor(const s32 theLanguage) const; //these two functions return the name for the specified language, or the closest one if that is not available
             std::string getIcon() const { return icon; }
             #ifndef EMULATOR
             u128 getUserID() const { return user_id; }

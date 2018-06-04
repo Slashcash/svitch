@@ -107,10 +107,10 @@ MainState::MainState() {
 void MainState::buildTitleInfo() {
     const unsigned int SPACING = 10;
 
-    game_title.setMsg(savefiles[save_selected].getTitleName());
+    game_title.setMsg(savefiles[save_selected].getBestSuitableName(Gui::getInstance()->getSystemLanguage()));
     game_title.setPosition( (Window::getInstance()->getSize().x / 2) - (game_title.getSize().x /2), (Window::getInstance()->getSize().y / 2) - (game_title.getSize().y / 2) );
 
-    game_author.setMsg(savefiles[save_selected].getTitleAuthor());
+    game_author.setMsg(savefiles[save_selected].getBestSuitableAuthor(Gui::getInstance()->getSystemLanguage()));
     game_author.setPosition( (game_title.getSize().x / 2) - (game_author.getSize().x / 2), game_title.getSize().y + SPACING );
 
     std::string user_id_temp_str;
