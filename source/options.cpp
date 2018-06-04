@@ -15,7 +15,9 @@ const std::string EXPORT_PATH = BASE_PATH + "saves/";
 const std::string IMPORT_PATH = BASE_PATH + "saves/";
 const std::string BACKUP_PATH = BASE_PATH + IMPORT_PATH + "backup/";
 
-const std::string APP = "Svitch";
+const std::string APP_TITLE = "Svitch";
+const std::string APP_VERSION = "v0.2.1-alpha";
+const std::string APP = APP_TITLE + " " + APP_VERSION;
 
 const std::string DEFAULT_LANGUAGECODE = "en-US";
 const s32 DEFAULT_LANGUAGE = 1;
