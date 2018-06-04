@@ -61,11 +61,19 @@ ImportState::ImportState(const SaveFile& theSaveFile) : savefile(theSaveFile) {
     Signal signal_a("IMPORT");
     signals.push_back(std::make_pair(event_a, signal_a));
 
-    InputEvent event_l(InputEvent::BUTTON_PRESSED, KEY_MINUS);
+    #ifndef EMULATOR
+    InputEvent event_l(InputEvent::BUTTON_PRESSED, BUTTON_DLEFT);
+    #else
+    InputEvent event_l(InputEvent::BUTTON_PRESSED, BUTTON_MINUS);
+    #endif
     Signal signal_l("LEFT");
     signals.push_back(std::make_pair(event_l, signal_l));
 
-    InputEvent event_r(InputEvent::BUTTON_PRESSED, KEY_PLUS);
+    #ifndef EMULATOR
+    InputEvent event_r(InputEvent::BUTTON_PRESSED, BUTTON_DRIGHT);
+    #else
+    InputEvent event_r(InputEvent::BUTTON_PRESSED, BUTTON_PLUS);
+    #endif
     Signal signal_r("RIGHT");
     signals.push_back(std::make_pair(event_r, signal_r));
 
