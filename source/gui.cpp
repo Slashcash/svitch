@@ -35,6 +35,7 @@ Gui::Gui() {
 
     //all the language supported by this software (add them here to support more of them)
     supported_languages.push_back("en-US");
+    supported_languages.push_back("en-GB");
     supported_languages.push_back("it");
 
     #ifndef EMULATOR
