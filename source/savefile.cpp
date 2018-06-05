@@ -147,7 +147,7 @@ void SaveFile::getSaveFileInformation() {
 
     //gettig the icon
     writeToLog("Getting the save icon");
-    std::ifstream icon_stream(DEFAULT_ICON_NAME.c_str(), std::ios::in | std::ios::binary);
+    std::ifstream icon_stream((folder_path + DEFAULT_ICON_NAME).c_str(), std::ios::in | std::ios::binary);
     if( !icon_stream.is_open() )  {
         OPResult op_res(ERR_OPEN_STREAM);
         writeToLog(op_res, LogWriter::WARNING);
@@ -599,7 +599,7 @@ OPResult SaveFile::extractSVIToPath(const std::string& theSVIPath, const std::st
 
         //if it is a file we write it to disk
         else {
-            if( std::string(it->file_stat.m_filename) != DEFAULT_SAVEHEADER_NAME ) {
+            if( std::string(it->file_stat.m_filename) != DEFAULT_SAVEHEADER_NAME && std::string(it->file_stat.m_filename) != DEFAULT_ICON_NAME ) {
                 writeToLog("Writing file "+theDestinationPath+it->file_stat.m_filename);
                 std::ofstream stream((theDestinationPath+it->file_stat.m_filename).c_str(), std::ios::out | std::ios::binary);
                     if( !stream.is_open() ) {
@@ -793,7 +793,7 @@ OPResult SaveFile::extractPathToSVI(mz_zip_archive& theArchive, const std::strin
 
         else if( dir->d_type == DT_REG ) {
             #ifdef EMULATOR
-            if( dir->d_name != DEFAULT_SAVEHEADER_NAME ) {
+            if( dir->d_name != DEFAULT_SAVEHEADER_NAME && dir->d_name != DEFAULT_ICON_NAME ) {
             #endif // EMULATOR
             std::ostringstream file_stream;
             file_stream << "Creating file " << theIterator << dir->d_name << " in the archive";
