@@ -117,8 +117,8 @@ void Gui::dropState() {
 
 Gui* Gui::getInstance() {
     if( !is_initialized ) {
-        instance = new Gui();
         is_initialized = true;
+        instance = new Gui();
     }
 
     return instance;
