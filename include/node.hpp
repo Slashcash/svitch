@@ -5,7 +5,7 @@
 
 #include "drawable.hpp"
 #include "transformation.hpp"
-#include "window.hpp"
+#include "rendersurface.hpp"
 
 /*the basic graphic element for this library, it inherits from transformation
 nodes are organized in a tree, drawing a node will draw all its children, children transformation is relative to the parent's one*/
@@ -25,8 +25,8 @@ class Node : public Transformation, public Drawable {
         Node* parent; //the parent node, lifecycle to be managed separately
         std::vector<Node*> children; //all the children. Lifecycle to be managed externally
 
-        virtual void draw(Window& theWindow, const Transformation& theTransformation = Transformation()) const final;
-        virtual void drawCurrent(Window& theWindow, const Transformation& theTransformation) const = 0; //derive and implement this
+        virtual void draw(RenderSurface& theTarget, const Transformation& theTransformation = Transformation()) const final;
+        virtual void drawCurrent(RenderSurface& theTarget, const Transformation& theTransformation) const = 0; //derive and implement this
         virtual void setParent(Node* theParent) final { parent = theParent; }
         virtual Node* getParent() const final { return parent; }
 

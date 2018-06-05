@@ -7,11 +7,9 @@
 
 #include "vector2.hpp"
 #include "logwriter.hpp"
-#include "color.hpp"
 #include "transformation.hpp"
 #include "inputevent.hpp"
-
-class Drawable;
+#include "rendersurface.hpp"
 
 //this struct is passed to the input thread as a paramater
 struct InputThreadParameter {
@@ -20,14 +18,13 @@ struct InputThreadParameter {
     Mutex* thread_input_mutex;
 };
 
-class Window : public LogWriter {
+class Window : public LogWriter, public RenderSurface {
     private:
         static Window* instance;
         static bool is_initialized;
         bool is_valid;
 
         u32* frame_buffer;
-        Size window_size;
 
         std::atomic<bool> request_to_exit;          //set to false by default. when set to true notifies the input thread that it should stop executing
         bool thread_initialized;                    //whether or not the external thread has been correctly initialized
@@ -40,7 +37,6 @@ class Window : public LogWriter {
         Window();
         ~Window() {}
 
-        int mapCoordinatesToLinear(const Coordinate& theCoordinate) const; //converts a coordinate into a position in the linear framebuffer
         static std::vector<Button> controllerBitMask(const u64 controllerState); //this does a bitmask on u32 to see which button has been pressed/released
         static void inputManagement(void* theParameter); //this will be launched in a separate thread
 
@@ -48,12 +44,10 @@ class Window : public LogWriter {
         Window(const Window& theWindow) = delete;
         Window& operator=(const Window& theWindow) = delete;
 
-        Size getSize() const { return window_size; }
         bool isValid() const { return is_valid; }
         void update();
         void clear(const Color& theColor = Color(Color::BLACK)); //clears the framebuffer
-        void setWindowPixel(const Coordinate& theCoordinate, const Color& theColor, const Transformation& theTransformation = Transformation()); //fills the specified pixel window with the specified color/alpha (takes theTransformation into account)
-        void draw(const Drawable& theDrawable, const Transformation& theTransformation = Transformation());
+        void setPixelCurrent(const int thePosition, const Color& theColor); //fills the specified pixel window with the specified color/alpha (takes theTransformation into account)
         bool getInputEvents(InputEvent& theBuffer);
         bool isOpen() const { return appletMainLoop(); }
         static Window* getInstance();

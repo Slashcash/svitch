@@ -4,14 +4,13 @@
 #include "node.hpp"
 #include "texture.hpp"
 
-
 /*the implementation of a sprite PLEASE NOTE THAT THIS JUST STORES A REFERENCE TO A TEXTURE*/
 
 class Sprite : public Node {
     private:
         const Texture* texture;
 
-        virtual void drawCurrent(Window& theWindow, const Transformation& theTransformation) const;
+        virtual void drawCurrent(RenderSurface& theTarget, const Transformation& theTransformation) const;
 
     public:
         Sprite() : Node() { texture = nullptr; }

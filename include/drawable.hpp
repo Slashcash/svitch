@@ -2,12 +2,12 @@
 #define _DRAWABLE_HPP_
 
 #include "transformation.hpp"
-#include "window.hpp"
+#include "rendersurface.hpp"
 
 class Drawable {
     private:
-        friend class Window;
-        virtual void draw(Window& theWindow, const Transformation& theTransformation = Transformation()) const = 0;
+        friend class RenderSurface;
+        virtual void draw(RenderSurface& theRenderSurface, const Transformation& theTransformation = Transformation()) const = 0;
 };
 
 

@@ -16,7 +16,7 @@ class Layer : public Drawable {
         friend class Scene;
         std::vector<Node*> nodes;
 
-        virtual void draw(Window& theWindow, const Transformation& theTransformation = Transformation()) const final;
+        virtual void draw(RenderSurface& theTarget, const Transformation& theTransformation = Transformation()) const final;
 };
 
 #endif // _LAYER_HPP_

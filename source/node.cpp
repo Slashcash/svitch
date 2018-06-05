@@ -4,13 +4,13 @@ Node::Node() : Transformation(), Drawable() {
     parent = nullptr;
 }
 
-void Node::draw(Window& theWindow, const Transformation& theTransformation) const {
+void Node::draw(RenderSurface& theTarget, const Transformation& theTransformation) const {
     //drawing this node
     Transformation thisnode_transformation = (*this) * theTransformation;
-    drawCurrent(theWindow, thisnode_transformation);
+    drawCurrent(theTarget, thisnode_transformation);
 
     //drawing all its children
-    for( auto it = children.begin(); it < children.end(); it++ ) (*it)->draw(theWindow, thisnode_transformation);
+    for( auto it = children.begin(); it < children.end(); it++ ) (*it)->draw(theTarget, thisnode_transformation);
 }
 
 void Node::detachChild(Node* theChild) {

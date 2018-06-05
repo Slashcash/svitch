@@ -31,7 +31,7 @@ Size Text::getSize() const {
     }
 }
 
-void Text::drawCurrent(Window& theWindow, const Transformation& theTransformation) const {
+void Text::drawCurrent(RenderSurface& theTarget, const Transformation& theTransformation) const {
     if( font != nullptr ) {
         //setting the correct font size
         font->setFontSize(font_size);
@@ -52,7 +52,7 @@ void Text::drawCurrent(Window& theWindow, const Transformation& theTransformatio
                 for(unsigned int x = 0; x < glyph_size.x; x++  ) {
                     unsigned int pos = (y * glyph_size.x + x) * 4;
                     Color pixel_color((*raw_data)[pos], (*raw_data)[pos+1], (*raw_data)[pos+2], (*raw_data)[pos+3]);
-                    theWindow.setWindowPixel(Coordinate(pen_x+font->getGlyphBitmapSize().x+x, y-font->getGlyphBitmapSize().y), pixel_color, theTransformation);
+                    theTarget.setPixel(Coordinate(pen_x+font->getGlyphBitmapSize().x+x, y-font->getGlyphBitmapSize().y), pixel_color, theTransformation);
                 }
             }
 

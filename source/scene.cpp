@@ -15,13 +15,13 @@ void Scene::addToLayer(Node* theNode, const unsigned int theLayerNum) {
 
 }
 
-void Scene::drawCurrent(Window& theWindow, const Transformation& theTransformation) const {
+void Scene::drawCurrent(RenderSurface& theTarget, const Transformation& theTransformation) const {
     //does it need to be scaled taking its size into account?
-    Vector2<float> scaling_factor = Vector2<float>(getSize().x / theWindow.getSize().x, getSize().y / theWindow.getSize().y);
+    Vector2<float> scaling_factor = Vector2<float>(getSize().x / theTarget.getSize().x, getSize().y / theTarget.getSize().y);
     Transformation calculated_transf = theTransformation;
     calculated_transf.scale(scaling_factor);
 
     for( auto it = layers.begin(); it < layers.end(); it++ )
         for( auto it2 = it->nodes.begin(); it2 < it->nodes.end(); it2++ )
-            theWindow.draw(*(*it2), theTransformation);
+            theTarget.draw(*(*it2), theTransformation);
 }

@@ -15,9 +15,9 @@ Window::Window() {
     gfxInitDefault();
 
     //getting a framebuffer pointer & size
-    frame_buffer = (u32*)gfxGetFramebuffer(&window_size.x, &window_size.y);
+    frame_buffer = (u32*)gfxGetFramebuffer(&render_size.x, &render_size.y);
     std::ostringstream graphic_stream;
-    graphic_stream << "Using the framebuffer @" << std::hex << frame_buffer << " with a size of " << std::dec << window_size.x << "x" << window_size.y;
+    graphic_stream << "Using the framebuffer @" << std::hex << frame_buffer << " with a size of " << std::dec << render_size.x << "x" << render_size.y;
     writeToLog(graphic_stream.str());
 
     //INPUT INITIALIZATION
@@ -80,28 +80,13 @@ void Window::update() {
 void Window::clear(const Color& theColor) {
     gfxFlushBuffers();
 
-    for( unsigned int y = 0; y < window_size.y; y++ )
-        for( unsigned int x = 0; x < window_size.x; x++ )
-            setWindowPixel(Coordinate(x, y), theColor);
+    for( unsigned int y = 0; y < render_size.y; y++ )
+        for( unsigned int x = 0; x < render_size.x; x++ )
+            setPixel(Coordinate(x, y), theColor);
 }
 
-void Window::setWindowPixel(const Coordinate& theCoordinate, const Color& theColor, const Transformation& theTransformation) {
-    int pos = mapCoordinatesToLinear(theTransformation.transformCoordinate(theCoordinate));
-
-    if( pos != -1 ) { //if we are inside our window
-        frame_buffer[pos] = theColor;
-    }
-}
-
-int Window::mapCoordinatesToLinear(const Coordinate& theCoordinate) const {
-    if( theCoordinate.x < 0 || theCoordinate.y < 0 ) return -1; //if it is outside the range of our window in negative
-    if( (unsigned int)theCoordinate.x >= window_size.x || (unsigned int)theCoordinate.y >= window_size.y ) return -1; //or in positive (safe cast now because we know coordinate are both positive)
-
-    else return theCoordinate.y * window_size.x + theCoordinate.x;
-}
-
-void Window::draw(const Drawable& theDrawable, const Transformation& theTransformation) {
-    theDrawable.draw(*this, theTransformation);
+void Window::setPixelCurrent(const int thePosition, const Color& theColor) {
+    frame_buffer[thePosition] = theColor;
 }
 
 Window* Window::getInstance() {

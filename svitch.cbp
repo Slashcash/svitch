@@ -76,11 +76,13 @@
 		<Unit filename="include/observer.hpp" />
 		<Unit filename="include/opresult.hpp" />
 		<Unit filename="include/options.hpp" />
+		<Unit filename="include/rendersurface.hpp" />
 		<Unit filename="include/resultstate.hpp" />
 		<Unit filename="include/savefile.hpp" />
 		<Unit filename="include/scene.hpp" />
 		<Unit filename="include/signal.hpp" />
 		<Unit filename="include/signaler.hpp" />
+		<Unit filename="include/sprite.hpp" />
 		<Unit filename="include/state.hpp" />
 		<Unit filename="include/svifile.hpp" />
 		<Unit filename="include/text.hpp" />
@@ -101,11 +103,13 @@
 		<Unit filename="source/observer.cpp" />
 		<Unit filename="source/opresult.cpp" />
 		<Unit filename="source/options.cpp" />
+		<Unit filename="source/rendersurface.cpp" />
 		<Unit filename="source/resultstate.cpp" />
 		<Unit filename="source/savefile.cpp" />
 		<Unit filename="source/scene.cpp" />
 		<Unit filename="source/signal.cpp" />
 		<Unit filename="source/signaler.cpp" />
+		<Unit filename="source/sprite.cpp" />
 		<Unit filename="source/state.cpp" />
 		<Unit filename="source/svifile.cpp" />
 		<Unit filename="source/text.cpp" />

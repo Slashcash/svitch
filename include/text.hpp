@@ -12,7 +12,7 @@ class Text : public Node {
         std::string msg;
         unsigned int font_size;
 
-        virtual void drawCurrent(Window& theWindow, const Transformation& theTransformation) const;
+        virtual void drawCurrent(RenderSurface& theTarget, const Transformation& theTransformation) const;
 
     public:
         Text() : Node() { font = nullptr; font_size = Font::DEFAULT_SCALABLE_SIZE; }
