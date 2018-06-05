@@ -147,7 +147,7 @@ void SaveFile::getSaveFileInformation() {
 
     //gettig the icon
     writeToLog("Getting the save icon");
-    std::ifstream icon_stream(DEFAULT_ICON_NAME.c_str(), std::ios::in | std::ios::binary);
+    std::ifstream icon_stream((folder_path + DEFAULT_ICON_NAME).c_str(), std::ios::in | std::ios::binary);
     if( !icon_stream.is_open() )  {
         OPResult op_res(ERR_OPEN_STREAM);
         writeToLog(op_res, LogWriter::WARNING);
