@@ -11,6 +11,7 @@ class Vector2 {
         Vector2(const T theX, const T theY) { x = theX; y = theY; }
 
         Vector2 operator+(const Vector2& theVector) const { return Vector2(x+theVector.x, y+theVector.y); }
+        Vector2 operator*(const Vector2& theVector) const { return Vector2(x*theVector.x, y*theVector.y); }
 };
 
 typedef Vector2<unsigned int> Size; //the size on a 2d plane is a vector with two ints
