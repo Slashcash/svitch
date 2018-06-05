@@ -33,8 +33,8 @@ SaveFile::SaveFile(const std::string& thePath) {
     title_id = 0;
 
     //sanitizing the string input with a slash at the end
-     folder_path = thePath;
-     if( folder_path[folder_path.size()-1] != '/' ) folder_path.append("/");
+    folder_path = thePath;
+    if( folder_path[folder_path.size()-1] != '/' ) folder_path.append("/");
 
     getSaveFileInformation();
 }
