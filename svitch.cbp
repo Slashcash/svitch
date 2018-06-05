@@ -77,6 +77,7 @@
 		<Unit filename="include/opresult.hpp" />
 		<Unit filename="include/options.hpp" />
 		<Unit filename="include/rendersurface.hpp" />
+		<Unit filename="include/rendertexture.hpp" />
 		<Unit filename="include/resultstate.hpp" />
 		<Unit filename="include/savefile.hpp" />
 		<Unit filename="include/scene.hpp" />
@@ -86,6 +87,7 @@
 		<Unit filename="include/state.hpp" />
 		<Unit filename="include/svifile.hpp" />
 		<Unit filename="include/text.hpp" />
+		<Unit filename="include/texture.hpp" />
 		<Unit filename="include/transformation.hpp" />
 		<Unit filename="include/vector2.hpp" />
 		<Unit filename="include/window.hpp" />
@@ -104,6 +106,7 @@
 		<Unit filename="source/opresult.cpp" />
 		<Unit filename="source/options.cpp" />
 		<Unit filename="source/rendersurface.cpp" />
+		<Unit filename="source/rendertexture.cpp" />
 		<Unit filename="source/resultstate.cpp" />
 		<Unit filename="source/savefile.cpp" />
 		<Unit filename="source/scene.cpp" />
@@ -113,6 +116,7 @@
 		<Unit filename="source/state.cpp" />
 		<Unit filename="source/svifile.cpp" />
 		<Unit filename="source/text.cpp" />
+		<Unit filename="source/texture.cpp" />
 		<Unit filename="source/transformation.cpp" />
 		<Unit filename="source/window.cpp" />
 		<Extensions>

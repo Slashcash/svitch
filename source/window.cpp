@@ -77,12 +77,12 @@ void Window::update() {
     gfxWaitForVsync();
 }
 
-void Window::clear(const Color& theColor) {
+void Window::clear() {
     gfxFlushBuffers();
 
     for( unsigned int y = 0; y < render_size.y; y++ )
         for( unsigned int x = 0; x < render_size.x; x++ )
-            setPixel(Coordinate(x, y), theColor);
+            setPixel(Coordinate(x, y), Color::BLACK);
 }
 
 void Window::setPixelCurrent(const int thePosition, const Color& theColor) {

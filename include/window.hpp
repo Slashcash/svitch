@@ -35,7 +35,7 @@ class Window : public LogWriter, public RenderSurface {
         Mutex input_mutex;                          //a mutex to protect shared resources (basically the event queue)
 
         Window();
-        ~Window() {}
+        virtual ~Window() {}
 
         static std::vector<Button> controllerBitMask(const u64 controllerState); //this does a bitmask on u32 to see which button has been pressed/released
         static void inputManagement(void* theParameter); //this will be launched in a separate thread
@@ -46,7 +46,7 @@ class Window : public LogWriter, public RenderSurface {
 
         bool isValid() const { return is_valid; }
         void update();
-        void clear(const Color& theColor = Color(Color::BLACK)); //clears the framebuffer
+        void clear(); //clears the framebuffer
         void setPixelCurrent(const int thePosition, const Color& theColor); //fills the specified pixel window with the specified color/alpha (takes theTransformation into account)
         bool getInputEvents(InputEvent& theBuffer);
         bool isOpen() const { return appletMainLoop(); }

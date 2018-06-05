@@ -9,8 +9,10 @@
 #include "logwriter.hpp"
 
 class Texture : public Loadable, public LogWriter {
+    protected: //i know not elegant but this is so convenient for RenderTexture
+        std::vector<u32> texture_data; //rgba8 texture data decoded using picopng
+
     private:
-        std::vector<unsigned char> texture_data; //rgba8 texture data decoded using picopng
         unsigned long width;
         unsigned long height;
 
@@ -20,7 +22,7 @@ class Texture : public Loadable, public LogWriter {
         Size getSize() const { return Size(width, height); }
 
         OPResult loadFromFile(const std::string& thePath); //loads a texture from a file
-        const std::vector<u8>* getRawTextureData() const { return &texture_data; } //gets the raw RGBA8 data for this texture
+        const std::vector<u32>* getRawTextureData() const { return &texture_data; } //gets the raw RGBA8 data for this texture
 };
 
 #endif // _TEXTURE_HPP_
