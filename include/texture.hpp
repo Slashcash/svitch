@@ -16,6 +16,9 @@ class Texture : public Loadable, public LogWriter {
         unsigned long width;
         unsigned long height;
 
+        OPResult decodeAsPNG(void* theInputData, const std::size_t theSize);
+        OPResult decodeAsJPEG(void* theInputData, const std::size_t theSize);
+
     public:
         Texture() { width = 0; height = 0; }
 
