@@ -10,26 +10,26 @@ ImportState::ImportState(const SaveFile& theSaveFile) : savefile(theSaveFile) {
     save_selected = 0;
 
     //texts initialization
-    no_importing.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
+    no_importing.setFont(font_manager.getResource(Font::SHARED_FONT));
     no_importing.setCharacterSize(20);
     no_importing.setMsg(LangFile::getInstance()->getValue("no_importing")+" "+savefile.getBestSuitableName(Gui::getInstance()->getSystemLanguage()));
     no_importing.setPosition( (Window::getInstance()->getSize().x / 2) - (no_importing.getSize().x /2), 500 );
 
-    importing_for.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
+    importing_for.setFont(font_manager.getResource(Font::SHARED_FONT));
     importing_for.setCharacterSize(20);
     importing_for.setMsg(LangFile::getInstance()->getValue("importing_for")+" "+savefile.getBestSuitableName(Gui::getInstance()->getSystemLanguage()));
     importing_for.setPosition( (Window::getInstance()->getSize().x / 2) - (importing_for.getSize().x /2), 150 );
 
-    file_found.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
+    file_found.setFont(font_manager.getResource(Font::SHARED_FONT));
     file_found.setCharacterSize(25);
 
-    file_info.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
+    file_info.setFont(font_manager.getResource(Font::SHARED_FONT));
     file_info.setCharacterSize(25);
 
-    game_author.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
+    game_author.setFont(font_manager.getResource(Font::SHARED_FONT));
     game_author.setCharacterSize(35);
 
-    game_title.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
+    game_title.setFont(font_manager.getResource(Font::SHARED_FONT));
     game_title.setCharacterSize(35);
     game_title.attachChild(&game_author);
     game_title.attachChild(&file_info);
@@ -37,16 +37,16 @@ ImportState::ImportState(const SaveFile& theSaveFile) : savefile(theSaveFile) {
 
     scene.addToLayer(&game_title, 0);
 
-    arrow_info.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
+    arrow_info.setFont(font_manager.getResource(Font::SHARED_FONT));
     arrow_info.setMsg(LangFile::getInstance()->getValue("press_arrow_scroll_files"));
     arrow_info.setPosition(100, 600);
 
-    import_info.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
+    import_info.setFont(font_manager.getResource(Font::SHARED_FONT));
     import_info.setMsg(LangFile::getInstance()->getValue("press_a_import"));
     arrow_info.attachChild(&import_info);
     import_info.setPosition(0, arrow_info.getSize().y + 10);
 
-    exit_info.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
+    exit_info.setFont(font_manager.getResource(Font::SHARED_FONT));
     exit_info.setMsg(LangFile::getInstance()->getValue("press_b_undo"));
     import_info.attachChild(&exit_info);
     exit_info.setPosition(0, import_info.getSize().y + 10);

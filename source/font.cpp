@@ -5,51 +5,62 @@
 
 bool Font::freetype_initialized = false;
 FT_Library Font::freetype_library;
+const std::string Font::SHARED_FONT = "SHARED_FONT";
 
 Font::Font() {
     font_loaded = false;
 
     if( !freetype_initialized ) {
+        writeToLog("Initializing freetype library", 1);
         FT_Error error = FT_Init_FreeType(&freetype_library);
-        if( error ) return;
-        else freetype_initialized = true;
+        if( error ) {
+            OPResult op_res(ERR_FREETYPE_NOT_INITIALIZED, error);
+            writeToLog(op_res);
+            return;
+        }
+
+        else { freetype_initialized = true; writeToLog("Freetype initialization SUCCESS"); }
     }
 }
 
 OPResult Font::loadFromFile(const std::string& thePath) {
-    std::ostringstream initial_stream;
-    initial_stream << "Loading a font from " << thePath;
-    writeToLog(initial_stream.str(), 1);
+    if( thePath == SHARED_FONT ) return loadSharedFont();
 
-    if( !freetype_initialized ) {
-        OPResult op_res(ERR_FREETYPE_NOT_INITIALIZED);
-        writeToLog(op_res);
-        return op_res;
+    else {
+        std::ostringstream initial_stream;
+        initial_stream << "Loading a font from " << thePath;
+        writeToLog(initial_stream.str(), 1);
+
+        if( !freetype_initialized ) {
+            OPResult op_res(ERR_FREETYPE_NOT_INITIALIZED);
+            writeToLog(op_res);
+            return op_res;
+        }
+
+        FT_Error error = FT_New_Face(freetype_library, thePath.c_str(), 0, &font_face);
+        if( error ) {
+            OPResult op_res(ERR_LOAD_FONT_FACE, error);
+            writeToLog(op_res);
+            return op_res;
+        }
+
+        font_loaded = true;
+
+        //choosing the font size
+        unsigned int default_size;
+        if( (font_face->face_flags & FT_FACE_FLAG_SCALABLE) ) default_size = DEFAULT_SCALABLE_SIZE; //if the font is scalable we choose an arbitrary size
+        else if( (font_face->face_flags & FT_FACE_FLAG_FIXED_SIZES) && (font_face->num_fixed_sizes > 0) ) default_size = font_face->available_sizes[0].width;
+        else default_size = DEFAULT_SCALABLE_SIZE; //if we reach here we are basicly fucked
+
+        std::ostringstream size_stream;
+        size_stream << "Setting the font size to " << default_size;
+        writeToLog(size_stream.str());
+        OPResult res = setFontSize(default_size);
+        if( !res ) return res;
+
+        writeToLog("Loading font from file SUCCESS");
+        return OPResult(OPResult::SUCCESS);
     }
-
-    FT_Error error = FT_New_Face(freetype_library, thePath.c_str(), 0, &font_face);
-    if( error ) {
-        OPResult op_res(ERR_LOAD_FONT_FACE, error);
-        writeToLog(op_res);
-        return op_res;
-    }
-
-    font_loaded = true;
-
-    //choosing the font size
-    unsigned int default_size;
-    if( (font_face->face_flags & FT_FACE_FLAG_SCALABLE) ) default_size = DEFAULT_SCALABLE_SIZE; //if the font is scalable we choose an arbitrary size
-    else if( (font_face->face_flags & FT_FACE_FLAG_FIXED_SIZES) && (font_face->num_fixed_sizes > 0) ) default_size = font_face->available_sizes[0].width;
-    else default_size = DEFAULT_SCALABLE_SIZE; //if we reach here we are basicly fucked
-
-    std::ostringstream size_stream;
-    size_stream << "Setting the font size to " << default_size;
-    writeToLog(size_stream.str());
-    OPResult res = setFontSize(default_size);
-    if( !res ) return res;
-
-    writeToLog("Loading font from file SUCCESS");
-    return OPResult(OPResult::SUCCESS);
 }
 
 OPResult Font::setFontSize(const unsigned int theSize) {
@@ -109,4 +120,45 @@ Size Font::getGlyphBitmapSize() const {
     if( !font_loaded ) { return Size(0, 0); }
 
     return Size(font_face->glyph->bitmap_left, font_face->glyph->bitmap_top);
+}
+
+OPResult Font::loadSharedFont() {
+    PlFontData font;
+    writeToLog("Loading the shared font", 1);
+
+    if( !freetype_initialized ) {
+        OPResult op_res(ERR_FREETYPE_NOT_INITIALIZED);
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    writeToLog("Initializing pl");
+    Result res = plInitialize();
+    if( R_FAILED(res) ) {
+        OPResult op_res(ERR_INITIALIZE_PL, R_DESCRIPTION(res));
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    writeToLog("Getting the font");
+    res = plGetSharedFontByType(&font, PlSharedFontType_Standard);
+    if( R_FAILED(res) ) {
+        OPResult op_res(ERR_GET_SHARED_FONT, R_DESCRIPTION(res));
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    FT_Error error = FT_New_Memory_Face(freetype_library, (const unsigned char*)font.address, font.size, 0, &font_face);
+        if( error ) {
+        OPResult op_res(ERR_LOAD_FONT_FACE, error);
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    //setting the font size
+    std::ostringstream size_stream;
+    size_stream << "Setting the font size to " << DEFAULT_SCALABLE_SIZE;
+    writeToLog(size_stream.str());
+    OPResult op_res = setFontSize(DEFAULT_SCALABLE_SIZE); //since we're pretty sure the shared font is scalable
+    if( !res ) return res;
 }

@@ -20,8 +20,11 @@ class Font : public Loadable, public LogWriter {
         bool font_loaded;
         std::vector<unsigned char> glyph_data;
 
+        OPResult loadSharedFont();
+
     public:
         static const unsigned int DEFAULT_SCALABLE_SIZE = 20; //the default size for a scalable font
+        static const std::string SHARED_FONT; //pass this string to loadFromFile to load the shared nintendo font inside the console
 
         Font();
 

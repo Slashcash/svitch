@@ -46,7 +46,9 @@ enum Error { //all the things that can go wrong in this software
     ERR_INVALID_SVI,
     ERR_DELETE_FOLDER,
     ERR_CREATE_DIRECTORY,
-    ERR_GET_SYSTEM_LANGUAGE
+    ERR_GET_SYSTEM_LANGUAGE,
+    ERR_INITIALIZE_PL,
+    ERR_GET_SHARED_FONT
 };
 
 class OPResult {
