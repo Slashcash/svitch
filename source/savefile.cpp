@@ -33,8 +33,8 @@ SaveFile::SaveFile(const std::string& thePath) {
     title_id = 0;
 
     //sanitizing the string input with a slash at the end
-     folder_path = thePath;
-     if( folder_path[folder_path.size()-1] != '/' ) folder_path.append("/");
+    folder_path = thePath;
+    if( folder_path[folder_path.size()-1] != '/' ) folder_path.append("/");
 
     getSaveFileInformation();
 }
@@ -161,13 +161,8 @@ void SaveFile::getSaveFileInformation() {
 
     //SEARCHING FOR THE ENGLISH LANGUAGES TO WRITE THE LOG CORRECTLY
     std::ostringstream log_str_final;
-    std::string log_temp_title;
-    std::string log_temp_author;
-    if( title_names[1].empty() ) log_temp_title = "NO_ENGLISH";
-    else log_temp_title = title_names[1];
-
-    if( title_authors[1].empty() ) log_temp_author = "NO_ENGLISH";
-    else log_temp_author = title_authors[1];
+    std::string log_temp_title = getBestSuitableName(1);
+    std::string log_temp_author = getBestSuitableAuthor(1);
 
     log_str_final << "Additional information found. " <<  "Title " << std::hex << title_id << " is " << log_temp_title << ", " << log_temp_author;
     writeToLog(log_str_final.str());
@@ -899,7 +894,7 @@ std::string SaveFile::getBestSuitableName(const s32 theLanguage) const {
             if( !title_names[i].empty() )
                 return title_names[i];
 
-    return "UNKNOWN";
+    return UNKNOWN_PARAMETER_STR;
 }
 
 std::string SaveFile::getBestSuitableAuthor(const s32 theLanguage) const {
@@ -927,5 +922,5 @@ std::string SaveFile::getBestSuitableAuthor(const s32 theLanguage) const {
             if( !title_authors[i].empty() )
                 return title_authors[i];
 
-    return "UNKNOWN";
+    return UNKNOWN_PARAMETER_STR;
 }

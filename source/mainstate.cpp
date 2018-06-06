@@ -17,7 +17,7 @@ MainState::MainState() {
 
     //texts initialization
     game_userid.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
-    game_title.setCharacterSize(25);
+    game_userid.setCharacterSize(25);
     game_author.attachChild(&game_userid);
 
     game_author.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));

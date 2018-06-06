@@ -63,9 +63,6 @@ Gui::Gui() {
     else lang_filename = system_language_code + ".lang";
 
     if( !LangFile::getInstance()->loadFromFile(ROMFS_PATH+"lang/"+lang_filename) ) return;
-
-    //adding the state
-    addState(new MainState());
 }
 
 void Gui::getSetLanguage() {
@@ -94,6 +91,9 @@ void Gui::getSetLanguage() {
 }
 
 void Gui::run() {
+    //adding the first state
+    addState(new MainState());
+
     while( Window::getInstance()->isOpen() && !states.empty() ) {
         //updating
         states.top()->updateBase();
@@ -105,8 +105,6 @@ void Gui::run() {
         Window::getInstance()->clear();
         states.top()->drawBase();
         Window::getInstance()->update();
-
-
     }
 }
 
