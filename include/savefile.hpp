@@ -37,7 +37,7 @@ class SaveFile : public LogWriter {
         u64 title_id; //the title id for this savefile
         std::vector<std::string> title_names; //the game title for this savefile
         std::vector<std::string> title_authors; //the game author of this savefile
-        std::string icon; //here we will store the icon as binary data (in jpeg)
+        std::string icon; //here we will store the icon as binary data (in jpeg) we store a copy of it in the texturemanager so it is probably overkill, i could probably encode back that copy and delete this but for now it's here
         static const unsigned int LANGUAGE_NUM = 16;
 
         #ifdef EMULATOR

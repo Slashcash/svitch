@@ -5,6 +5,7 @@
 #include <string>
 
 #include "font.hpp"
+#include "texture.hpp"
 
 /*since we want to store and recycle heavy loadable object (textures, fonts) we use this class to manage them*/
 
@@ -19,6 +20,7 @@ class LoadableManager {
 
     public:
         T& getResource(const std::string& theID);
+        void addResource(void* theData, const std::size_t theSize, const std::string& theID); //loads the resource from memory and adds it to the manager
 };
 
 template<class T>
@@ -38,6 +40,13 @@ T& LoadableManager<T>::loadResource(const std::string& thePath) {
     else return default_resource;
 }
 
+template<class T>
+void LoadableManager<T>::addResource(void* theData, const std::size_t theSize, const std::string& theID) {
+    T buffer;
+    if( buffer.loadFromMemory(theData, theSize) ) loadable_map.insert(std::make_pair(theID, buffer));
+}
+
 typedef LoadableManager<Font> FontManager;
+typedef LoadableManager<Texture> TextureManager;
 
 #endif // _LOADABLEMANAGER_HPP_

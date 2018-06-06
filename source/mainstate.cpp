@@ -89,6 +89,14 @@ MainState::MainState() {
     //getting all the savefiles
     savefiles = SaveFile::getAllSaveFiles();
 
+    //loading all the icons of the savefiles
+    for( auto it = savefiles.begin(); it < savefiles.end(); it++ ) {
+        std::ostringstream id;
+        id << it->getTitleID();
+        std::string temp_icon = it->getIcon();
+        texture_manager.addResource((void*)(&(temp_icon[0])), temp_icon.size(), id.str());
+    }
+
     //writing the name of first save on screen
     if( savefiles.empty() ) {
         game_title.setMsg(LangFile::getInstance()->getValue("no_save"));

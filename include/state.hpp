@@ -21,6 +21,7 @@ class State : public Signaler, public Observer {
         Scene scene;
         std::vector<InputSignal> input_signals;
         static FontManager font_manager;
+        static TextureManager texture_manager;
 
     public:
         State() { subscrive(this); request_to_exit = false; }

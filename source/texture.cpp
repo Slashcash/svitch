@@ -85,5 +85,7 @@ OPResult Texture::decodeAsJPEG(void* theInputData, const std::size_t theSize) {
         }
     }
 
+    njDone();
+
     return OPResult(OPResult::SUCCESS);
 }

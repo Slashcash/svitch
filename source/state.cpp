@@ -1,6 +1,7 @@
 #include "state.hpp"
 
 FontManager State::font_manager;
+TextureManager State::texture_manager;
 
 void State::updateBase() {
     InputEvent buffer;
