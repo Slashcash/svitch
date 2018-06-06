@@ -36,6 +36,7 @@ class Font : public Loadable, public LogWriter {
         OPResult setFontSize(const unsigned int theSize);
 
         virtual OPResult loadFromFile(const std::string& thePath);
+        virtual OPResult loadFromMemory(void* theData, const std::size_t theSize);
 };
 
 

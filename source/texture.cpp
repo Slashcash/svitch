@@ -5,6 +5,29 @@
 
 #include "color.hpp"
 
+OPResult Texture::loadFromMemory(void* theData, const std::size_t theSize) {
+    int png_error;
+    std::vector<unsigned char> buffer_data;
+    if( (png_error = decodePNG(buffer_data, width, height, (const unsigned char*)theData, theSize)) != 0 ) {
+        OPResult op_res(ERR_DECODE_IMG);
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    //converting it into a linear "framebuffer" of u32 for convenience reasons"
+    for(unsigned int y = 0; y < getSize().y; y++ ) {
+        for(unsigned int x = 0; x < getSize().x; x++  ) {
+            unsigned int pos = (y * getSize().x + x) * 4;
+            Color pixel_color(buffer_data[pos], buffer_data[pos+1], buffer_data[pos+2], buffer_data[pos+3]);
+            texture_data.push_back(pixel_color);
+        }
+    }
+
+    writeToLog("Texture loading SUCCESS");
+    return OPResult(OPResult::SUCCESS);
+
+}
+
 OPResult Texture::loadFromFile(const std::string& thePath) {
     writeToLog("Loading texture at "+thePath, 1);
 
@@ -30,23 +53,5 @@ OPResult Texture::loadFromFile(const std::string& thePath) {
     image.resize((size_t)file_size);
     file.read((char*)(&image[0]), file_size);
 
-    int png_error;
-    std::vector<unsigned char> buffer_data;
-    if( (png_error = decodePNG(buffer_data, width, height, &image[0], image.size())) != 0 ) {
-        OPResult op_res(ERR_DECODE_IMG);
-        writeToLog(op_res);
-        return op_res;
-    }
-
-    //converting it into a linear "framebuffer" of u32 for convenience reasons"
-    for(unsigned int y = 0; y < getSize().y; y++ ) {
-        for(unsigned int x = 0; x < getSize().x; x++  ) {
-            unsigned int pos = (y * getSize().x + x) * 4;
-            Color pixel_color(buffer_data[pos], buffer_data[pos+1], buffer_data[pos+2], buffer_data[pos+3]);
-            texture_data.push_back(pixel_color);
-        }
-    }
-
-    writeToLog("Texture loading SUCCESS");
-    return OPResult(OPResult::SUCCESS);
+    return loadFromMemory(&image[0], file_size);
 }

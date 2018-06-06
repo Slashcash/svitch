@@ -9,6 +9,7 @@
 
 class Loadable {
     public:
+        virtual OPResult loadFromMemory(void* theData, const std::size_t theSize) = 0;
         virtual OPResult loadFromFile(const std::string& thePath) = 0;
 };
 

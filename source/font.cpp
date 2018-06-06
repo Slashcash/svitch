@@ -23,6 +23,38 @@ Font::Font() {
     }
 }
 
+OPResult Font::loadFromMemory(void* theData, const std::size_t theSize) {
+    if( !freetype_initialized ) {
+        OPResult op_res(ERR_FREETYPE_NOT_INITIALIZED);
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    FT_Error error = FT_New_Memory_Face(freetype_library, (const unsigned char*)theData, theSize, 0, &font_face);
+        if( error ) {
+        OPResult op_res(ERR_LOAD_FONT_FACE, error);
+        writeToLog(op_res);
+        return op_res;
+    }
+
+    font_loaded = true;
+
+    //choosing the font size
+    unsigned int default_size;
+    if( (font_face->face_flags & FT_FACE_FLAG_SCALABLE) ) default_size = DEFAULT_SCALABLE_SIZE; //if the font is scalable we choose an arbitrary size
+    else if( (font_face->face_flags & FT_FACE_FLAG_FIXED_SIZES) && (font_face->num_fixed_sizes > 0) ) default_size = font_face->available_sizes[0].width;
+    else default_size = DEFAULT_SCALABLE_SIZE; //if we reach here we are basicly fucked
+
+    std::ostringstream size_stream;
+    size_stream << "Setting the font size to " << default_size;
+    writeToLog(size_stream.str());
+    OPResult res = setFontSize(default_size);
+    if( !res ) return res;
+
+    writeToLog("Loading font SUCCESS");
+    return OPResult(OPResult::SUCCESS);
+}
+
 OPResult Font::loadFromFile(const std::string& thePath) {
     if( thePath == SHARED_FONT ) return loadSharedFont();
 
@@ -37,29 +69,29 @@ OPResult Font::loadFromFile(const std::string& thePath) {
             return op_res;
         }
 
-        FT_Error error = FT_New_Face(freetype_library, thePath.c_str(), 0, &font_face);
-        if( error ) {
-            OPResult op_res(ERR_LOAD_FONT_FACE, error);
+        std::ifstream file(thePath.c_str(), std::iostream::in | std::ifstream::binary | std::ifstream::ate);
+
+        if( !file.is_open() ) {
+            OPResult op_res(ERR_OPEN_STREAM);
             writeToLog(op_res);
             return op_res;
         }
 
-        font_loaded = true;
+        std::streamsize file_size = 0;
+        if(file.seekg(0, std::ios::end).good()) file_size = file.tellg();
+        if(file.seekg(0, std::ios::beg).good()) file_size -= file.tellg();
 
-        //choosing the font size
-        unsigned int default_size;
-        if( (font_face->face_flags & FT_FACE_FLAG_SCALABLE) ) default_size = DEFAULT_SCALABLE_SIZE; //if the font is scalable we choose an arbitrary size
-        else if( (font_face->face_flags & FT_FACE_FLAG_FIXED_SIZES) && (font_face->num_fixed_sizes > 0) ) default_size = font_face->available_sizes[0].width;
-        else default_size = DEFAULT_SCALABLE_SIZE; //if we reach here we are basicly fucked
+        if( file_size <= 0 ) {
+            OPResult op_res(ERR_READ_FILE);
+            writeToLog(op_res);
+            return op_res;
+        }
 
-        std::ostringstream size_stream;
-        size_stream << "Setting the font size to " << default_size;
-        writeToLog(size_stream.str());
-        OPResult res = setFontSize(default_size);
-        if( !res ) return res;
+        std::vector<unsigned char> font;
+        font.resize((size_t)file_size);
+        file.read((char*)(&font[0]), file_size);
 
-        writeToLog("Loading font from file SUCCESS");
-        return OPResult(OPResult::SUCCESS);
+        return loadFromMemory((void*)font[0], file_size);
     }
 }
 
@@ -145,20 +177,11 @@ OPResult Font::loadSharedFont() {
     if( R_FAILED(res) ) {
         OPResult op_res(ERR_GET_SHARED_FONT, R_DESCRIPTION(res));
         writeToLog(op_res);
+        plExit();
         return op_res;
     }
 
-    FT_Error error = FT_New_Memory_Face(freetype_library, (const unsigned char*)font.address, font.size, 0, &font_face);
-        if( error ) {
-        OPResult op_res(ERR_LOAD_FONT_FACE, error);
-        writeToLog(op_res);
-        return op_res;
-    }
-
-    //setting the font size
-    std::ostringstream size_stream;
-    size_stream << "Setting the font size to " << DEFAULT_SCALABLE_SIZE;
-    writeToLog(size_stream.str());
-    OPResult op_res = setFontSize(DEFAULT_SCALABLE_SIZE); //since we're pretty sure the shared font is scalable
-    if( !res ) return res;
+    OPResult op_res = loadFromMemory((void*)font.address, font.size);
+    plExit();
+    return op_res;
 }
