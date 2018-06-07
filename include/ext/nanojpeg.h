@@ -6,6 +6,8 @@
 #ifndef _NANOJPEG_H
 #define _NANOJPEG_H
 
+extern "C" {
+
 // nj_result_t: Result codes for njDecode().
 typedef enum _nj_result {
     NJ_OK = 0,        // no error, decoding successful
@@ -62,5 +64,7 @@ int njGetImageSize(void);
 // allocated at run-time by NanoJPEG. It is still possible to decode another
 // image after a njDone() call.
 void njDone(void);
+
+}
 
 #endif//_NANOJPEG_H
