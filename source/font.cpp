@@ -11,7 +11,6 @@ Font::Font() {
     font_loaded = false;
 
     if( !freetype_initialized ) {
-        writeToLog("Initializing freetype library", 1);
         FT_Error error = FT_Init_FreeType(&freetype_library);
         if( error ) {
             OPResult op_res(ERR_FREETYPE_NOT_INITIALIZED, error);
@@ -19,7 +18,7 @@ Font::Font() {
             return;
         }
 
-        else { freetype_initialized = true; writeToLog("Freetype initialization SUCCESS"); }
+        else { freetype_initialized = true; }
     }
 }
 
@@ -91,7 +90,7 @@ OPResult Font::loadFromFile(const std::string& thePath) {
         font.resize((size_t)file_size);
         file.read((char*)(&font[0]), file_size);
 
-        return loadFromMemory((void*)font[0], file_size);
+        return loadFromMemory(&font[0], file_size);
     }
 }
 
@@ -181,7 +180,7 @@ OPResult Font::loadSharedFont() {
         return op_res;
     }
 
-    OPResult op_res = loadFromMemory((void*)font.address, font.size);
+    OPResult op_res = loadFromMemory(font.address, font.size);
     plExit();
     return op_res;
 }
