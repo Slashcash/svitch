@@ -9,6 +9,7 @@ const std::string Font::SHARED_FONT = "SHARED_FONT";
 
 Font::Font() {
     font_loaded = false;
+    font_data = nullptr;
 
     if( !freetype_initialized ) {
         FT_Error error = FT_Init_FreeType(&freetype_library);
@@ -86,11 +87,10 @@ OPResult Font::loadFromFile(const std::string& thePath) {
             return op_res;
         }
 
-        std::vector<unsigned char> font;
-        font.resize((size_t)file_size);
-        file.read((char*)(&font[0]), file_size);
+        font_data = new char[file_size];
+        file.read(font_data, file_size);
 
-        return loadFromMemory(&font[0], file_size);
+        return loadFromMemory(font_data, file_size);
     }
 }
 
@@ -180,7 +180,16 @@ OPResult Font::loadSharedFont() {
         return op_res;
     }
 
-    OPResult op_res = loadFromMemory(font.address, font.size);
+    font_data = new char[font.size];
+    memcpy(font_data, font.address, font.size);
+
+
+    OPResult op_res = loadFromMemory(font_data, font.size);
     plExit();
     return op_res;
+}
+
+Font::~Font() {
+    //if( font_data != nullptr ) delete [] font_data;
+    //if( font_loaded ) FT_Done_Face(font_face);
 }

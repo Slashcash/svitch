@@ -68,11 +68,12 @@ void SVIFile::getInformations() {
         return;
     }
 
-    size_t header_size = 0;
+    size_t extracted_size = 0;
     char* buffer;
 
     writeToLog("Reading the header");
-    if( (buffer = (char*)mz_zip_reader_extract_file_to_heap(&archive, SaveFile::DEFAULT_SAVEHEADER_NAME.c_str(), &header_size, 0)) == NULL ) {
+    if( (buffer = (char*)mz_zip_reader_extract_file_to_heap(&archive, SaveFile::DEFAULT_SAVEHEADER_NAME.c_str(), &extracted_size, 0)) == NULL ) {
+        mz_zip_end(&archive);
         is_valid = false;
         title_id = 0;
         for(unsigned int i = 0; i < SaveFile::LANGUAGE_NUM; i++) title_names.push_back("");
@@ -81,11 +82,19 @@ void SVIFile::getInformations() {
         writeToLog(op_res);
         return;
     }
-
     std::string str_buffer;
-    str_buffer.append(buffer, header_size);
-
+    str_buffer.append(buffer, extracted_size);
     delete [] buffer;
+
+    writeToLog("Reading the icon");
+    if( (buffer = (char*)mz_zip_reader_extract_file_to_heap(&archive, SaveFile::DEFAULT_ICON_NAME.c_str(), &extracted_size, 0)) == NULL ) {
+        OPResult op_res(ERR_GET_ICON_SAVE);
+        writeToLog(op_res, LogWriter::WARNING);
+    }
+    icon.append(buffer, extracted_size);
+    delete [] buffer;
+
+    mz_zip_end(&archive);
 
     std::size_t element_pos;
     std::size_t value_pos;
@@ -145,13 +154,8 @@ void SVIFile::getInformations() {
 
     //SEARCHING FOR THE ENGLISH LANGUAGES TO WRITE THE LOG CORRECTLY
     std::ostringstream log_str_final;
-    std::string log_temp_title;
-    std::string log_temp_author;
-    if( title_names[1].empty() ) log_temp_title = "NO_ENGLISH";
-    else log_temp_title = title_names[1];
-
-    if( title_authors[1].empty() ) log_temp_author = "NO_ENGLISH";
-    else log_temp_author = title_authors[1];
+    std::string log_temp_title = getBestSuitableName(1);
+    std::string log_temp_author = getBestSuitableAuthor(1);
 
     log_str_final << "Additional information found. " <<  "Title " << std::hex << title_id << " is " << log_temp_title << ", " << log_temp_author;
     writeToLog(log_str_final.str());

@@ -22,6 +22,7 @@ class Gui : public LogWriter {
         Gui();
 
         void dropState();
+        void shutdown();
         void getSetLanguage();
 
     public:

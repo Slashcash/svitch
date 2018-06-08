@@ -15,6 +15,7 @@ class SVIFile : public LogWriter {
         std::vector<std::string> title_names; //the game title for this savefile
         std::vector<std::string> title_authors; //the game author of this savefile
         bool is_valid;
+        std::string icon; //here we will store the icon as binary data (in jpeg) we store a copy of it in the texturemanager so it is probably overkill, i could probably encode back that copy and delete this but for now it's here
 
         void getInformations();
 
@@ -23,6 +24,7 @@ class SVIFile : public LogWriter {
         SVIFile(const std::string& thePath);
 
         std::string getPath() const { return file_path; }
+        std::string getIcon() const { return icon; }
         bool isValid() const { return is_valid; }
         u64 getTitleID() const { return title_id; }
         std::vector<std::string> getTitleNames() const { return title_names; }

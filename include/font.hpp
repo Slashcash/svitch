@@ -19,6 +19,7 @@ class Font : public Loadable, public LogWriter {
         FT_Face font_face;
         bool font_loaded;
         std::vector<unsigned char> glyph_data;
+        char* font_data;
 
         OPResult loadSharedFont();
 
@@ -37,6 +38,8 @@ class Font : public Loadable, public LogWriter {
 
         virtual OPResult loadFromFile(const std::string& thePath);
         virtual OPResult loadFromMemory(void* theData, const std::size_t theSize);
+
+        ~Font();
 };
 
 

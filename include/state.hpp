@@ -16,6 +16,7 @@ typedef std::pair<InputEvent, Signal> InputSignal; //an InputSignal is a pair of
 class State : public Signaler, public Observer {
     private:
         bool request_to_exit; //if set to true this state will be popped out as soon as possible
+        bool request_to_shutdown; //if set to true the program will shut down as soon as possible
 
     protected:
         Scene scene;
@@ -24,7 +25,7 @@ class State : public Signaler, public Observer {
         static TextureManager texture_manager;
 
     public:
-        State() { subscrive(this); request_to_exit = false; }
+        State() { subscrive(this); request_to_exit = false; request_to_shutdown = false; }
 
         virtual void drawBase() const final { Window::getInstance()->draw(scene); draw(); }
         virtual void draw() const {} //override this if you need some additional drawing
@@ -34,8 +35,10 @@ class State : public Signaler, public Observer {
         void setInputSignal(const std::vector<InputSignal>& theInputSignal) { input_signals.clear(); for( auto it = theInputSignal.begin(); it < theInputSignal.end(); it++ ) input_signals.push_back(*it); }
 
         bool isRequestedToExit() const { return request_to_exit; }
+        bool isRequestedToShutdown() const { return request_to_shutdown; }
 
         void requestToExit() { request_to_exit = true; }
+        void requestToShutDown() { request_to_shutdown = true; }
 
         virtual ~State() {}
 };

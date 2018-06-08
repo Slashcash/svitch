@@ -100,12 +100,17 @@ void Gui::run() {
 
         //checking if the current state requested an exit
         if( states.top()->isRequestedToExit() ) { dropState(); continue; }
+        else if( states.top()->isRequestedToShutdown() ) { shutdown(); continue; }
 
         //drawing
         Window::getInstance()->clear();
         states.top()->drawBase();
         Window::getInstance()->update();
     }
+}
+
+void Gui::shutdown() {
+    while( !Gui::getInstance()->states.empty() ) Gui::getInstance()->dropState();
 }
 
 void Gui::dropState() {

@@ -133,8 +133,8 @@ void MainState::buildTitleInfo() {
 }
 
 void MainState::onNotify(const Signal& theSignal) {
-    if( theSignal.getName() == "EXIT" ) requestToExit();
 
+    if( theSignal.getName() == "EXIT" ) requestToShutDown();
     if( theSignal.getName() == "RIGHT" && !savefiles.empty() && save_selected < savefiles.size() - 1 ) emitSignal(Signal("SCROLL_RIGHT"));
     if( theSignal.getName() == "SCROLL_RIGHT" ) { save_selected++; buildTitleInfo(); }
 

@@ -117,6 +117,7 @@ void SaveFile::getSaveFileInformation() {
     //getting the savefile icon
     icon.append((char*)buf->icon, outsize - sizeof(buf->nacp));
 
+
     delete buf;
     nsExit();
     #else
