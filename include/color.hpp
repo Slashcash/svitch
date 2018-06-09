@@ -21,7 +21,9 @@ class Color {
         Color(const u32 theColor); //to be used with provided constants
 
         operator u32() const { return rgb_color; }
-
+        u8 getRed() const { return ((rgb_color & 0x00FF0000) >> 16); }
+        u8 getGreen() const { return ((rgb_color & 0x0000FF00) >> 8); }
+        u8 getBlue() const { return ((rgb_color & 0x000000FF)); }
 };
 
 

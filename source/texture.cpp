@@ -11,7 +11,7 @@ OPResult Texture::loadFromMemory(void* theData, const std::size_t theSize) {
 
     if( decodeAsPNG(theData, theSize) ) { writeToLog("Texture loading SUCCESS"); return OPResult(OPResult::SUCCESS); }
     else if( (op_res = decodeAsJPEG(theData, theSize)) ) { writeToLog("Texture loading SUCCESS"); return OPResult(OPResult::SUCCESS); }
-    else return op_res;
+    else { writeToLog(op_res); return op_res; }
 }
 
 OPResult Texture::loadFromFile(const std::string& thePath) {
@@ -68,6 +68,7 @@ OPResult Texture::decodeAsJPEG(void* theInputData, const std::size_t theSize) {
 
     nj_result_t jpeg_error;
     if( (jpeg_error = njDecode(theInputData, theSize)) != NJ_OK ) {
+        njDone();
         OPResult op_res(ERR_DECODE_IMG, jpeg_error);
         return op_res;
     }

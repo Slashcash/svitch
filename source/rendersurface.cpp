@@ -19,3 +19,9 @@ void RenderSurface::setPixel(const Coordinate& theCoordinate, const Color& theCo
     if( pos != -1 ) setPixelCurrent(pos, theColor);
 }
 
+Color RenderSurface::getPixel(const Coordinate& theCoordinate, const Transformation& theTransformation) {
+    int pos = mapCoordinatesToLinear(theTransformation.transformCoordinate(theCoordinate));
+
+    if( pos == -1 ) return Color(Color::BLACK);
+    else return getPixelCurrent(pos);
+}

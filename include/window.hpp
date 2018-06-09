@@ -48,6 +48,7 @@ class Window : public LogWriter, public RenderSurface {
         void update();
         void clear(); //clears the framebuffer
         void setPixelCurrent(const int thePosition, const Color& theColor); //fills the specified pixel window with the specified color/alpha (takes theTransformation into account)
+        virtual Color getPixelCurrent(const int thePosition) { return frame_buffer[thePosition]; }
         bool getInputEvents(InputEvent& theBuffer);
         bool isOpen() const { return appletMainLoop(); }
         static Window* getInstance();

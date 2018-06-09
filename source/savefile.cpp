@@ -111,7 +111,7 @@ void SaveFile::getSaveFileInformation() {
 
     for(unsigned int i = 0; i < LANGUAGE_NUM; i++) {
         title_names.push_back(buf->nacp.lang[i].name);
-        title_authors.push_back(buf->nacp.lang[i].authors);
+        title_authors.push_back(buf->nacp.lang[i].author);
     }
 
     //getting the savefile icon
