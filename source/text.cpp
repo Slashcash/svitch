@@ -48,11 +48,24 @@ void Text::drawCurrent(RenderSurface& theTarget, const Transformation& theTransf
 
             std::vector<unsigned char>* raw_data = font->getGlyphData(utf8_char, glyph_size);
 
+            float opacity;
             for(unsigned int y = 0; y < glyph_size.y; y++ ) {
                 for(unsigned int x = 0; x < glyph_size.x; x++  ) {
-                    unsigned int pos = (y * glyph_size.x + x) * 4;
+                    /*unsigned int pos = (y * glyph_size.x + x) * 4;
                     Color pixel_color((*raw_data)[pos], (*raw_data)[pos+1], (*raw_data)[pos+2], (*raw_data)[pos+3]);
-                    theTarget.setPixel(Coordinate(pen_x+font->getGlyphBitmapSize().x+x, y-font->getGlyphBitmapSize().y), pixel_color, theTransformation);
+                    theTarget.setPixel(Coordinate(pen_x+font->getGlyphBitmapSize().x+x, y-font->getGlyphBitmapSize().y), pixel_color, theTransformation);*/
+                    Color background_color = theTarget.getPixel(Coordinate(pen_x+font->getGlyphBitmapSize().x+x, y-font->getGlyphBitmapSize().y), theTransformation);
+                    unsigned int pos = (y * glyph_size.x + x) * 4;
+
+                    if( (*raw_data)[pos] == 0 ) theTarget.setPixel(Coordinate(pen_x+font->getGlyphBitmapSize().x+x, y-font->getGlyphBitmapSize().y), background_color, theTransformation);
+                    else {
+                        //calculate opacity
+                        opacity = (*raw_data)[pos] / 255.0;
+                        u8 red_value = font_color.getRed() * opacity + (1 - opacity) * background_color.getRed();
+                        u8 green_value = font_color.getGreen() * opacity + (1 - opacity) * background_color.getGreen();
+                        u8 blue_value = font_color.getBlue() * opacity + (1 - opacity) * background_color.getBlue();
+                        theTarget.setPixel(Coordinate(pen_x+font->getGlyphBitmapSize().x+x, y-font->getGlyphBitmapSize().y), Color(red_value, green_value, blue_value, 255), theTransformation);
+                    }
                 }
             }
 
