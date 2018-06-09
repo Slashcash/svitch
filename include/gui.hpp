@@ -23,7 +23,7 @@ class Gui : public LogWriter {
 
         void dropState();
         void shutdown();
-        void getSetLanguage();
+        OPResult getSetLanguage();
 
     public:
         Gui(const Gui& theGui) = delete;

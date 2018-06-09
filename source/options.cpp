@@ -19,7 +19,11 @@ const std::string APP_TITLE = "Svitch";
 const std::string APP_VERSION = "v0.2.1-alpha";
 const std::string APP = APP_TITLE + " " + APP_VERSION;
 
-const std::string DEFAULT_LANGUAGECODE = "en-US";
-const s32 DEFAULT_LANGUAGE = 1;
+const std::string DEFAULT_LANGUAGECODE = "en-GB";
+const s32 DEFAULT_LANGUAGE = 12;
+#ifdef EMULATOR
+const std::string EMULATOR_LANGUAGECODE = "en-GB";
+const s32 EMULATOR_LANGUAGE = 12;
+#endif
 
 #endif // _OPTIONS_CPP_

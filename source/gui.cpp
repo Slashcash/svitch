@@ -34,22 +34,16 @@ Gui::Gui() {
     #endif
 
     //all the language supported by this software (add them here to support more of them)
-    supported_languages.push_back("en-US");
+    //supported_languages.push_back("en-US");
     supported_languages.push_back("en-GB");
-    supported_languages.push_back("it");
+    //supported_languages.push_back("it");
 
     #ifndef EMULATOR
     //getting the system language
     getSetLanguage();
-
-    //converting it into its numerical id
-    setMakeLanguage(*((u64*)(system_language_code.c_str())), &system_language);
-
-    //exiting set
-    setExit();
     #else
-    system_language = DEFAULT_LANGUAGE;
-    system_language_code = DEFAULT_LANGUAGECODE;
+    system_language = EMULATOR_LANGUAGE;
+    system_language_code = EMULATOR_LANGUAGECODE;
     #endif
 
     std::ostringstream lang_stream;
@@ -65,7 +59,7 @@ Gui::Gui() {
     if( !LangFile::getInstance()->loadFromFile(ROMFS_PATH+"lang/"+lang_filename) ) return;
 }
 
-void Gui::getSetLanguage() {
+OPResult Gui::getSetLanguage() {
     writeToLog("Scanning for the system language", 1);
 
     writeToLog("Initializing set");
@@ -74,7 +68,8 @@ void Gui::getSetLanguage() {
         OPResult op_res(ERR_GET_SYSTEM_LANGUAGE, R_DESCRIPTION(res));
         writeToLog(op_res, 0, LogWriter::WARNING);
         system_language_code = DEFAULT_LANGUAGECODE;
-        return;
+        system_language = DEFAULT_LANGUAGE;
+        return op_res;
     }
 
     writeToLog("Actually getting the language");
@@ -84,10 +79,23 @@ void Gui::getSetLanguage() {
         OPResult op_res(ERR_GET_SYSTEM_LANGUAGE, R_DESCRIPTION(res));
         writeToLog(op_res, 0, LogWriter::WARNING);
         system_language_code = DEFAULT_LANGUAGECODE;
-        return;
+        system_language = DEFAULT_LANGUAGE;
+        return op_res;
     }
 
     system_language_code = (char*)(&temp_buffer);
+
+    writeToLog("Converting the language code");
+    res = setMakeLanguage(temp_buffer, &system_language);
+    if( R_FAILED(res) ) {
+        OPResult op_res(ERR_GET_SYSTEM_LANGUAGE, R_DESCRIPTION(res));
+        writeToLog(op_res, 0, LogWriter::WARNING);
+        system_language_code = DEFAULT_LANGUAGECODE;
+        system_language = DEFAULT_LANGUAGE;
+        return op_res;
+    }
+
+    return OPResult(OPResult::SUCCESS);
 }
 
 void Gui::run() {

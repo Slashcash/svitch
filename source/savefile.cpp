@@ -162,8 +162,8 @@ void SaveFile::getSaveFileInformation() {
 
     //SEARCHING FOR THE ENGLISH LANGUAGES TO WRITE THE LOG CORRECTLY
     std::ostringstream log_str_final;
-    std::string log_temp_title = getBestSuitableName(1);
-    std::string log_temp_author = getBestSuitableAuthor(1);
+    std::string log_temp_title = getBestSuitableName(DEFAULT_LANGUAGE);
+    std::string log_temp_author = getBestSuitableAuthor(DEFAULT_LANGUAGE);
 
     log_str_final << "Additional information found. " <<  "Title " << std::hex << title_id << " is " << log_temp_title << ", " << log_temp_author;
     writeToLog(log_str_final.str());
@@ -886,6 +886,7 @@ std::string SaveFile::getBestSuitableName(const s32 theLanguage) const {
     else if( theLanguage == 8 ) index = 8; //DUTCH
     else if( theLanguage == 9 ) index = 10; //PORTUGUESE
     else if( theLanguage == 10 ) index = 11; //RUSSIAN
+    else if( theLanguage == 12 ) index = 1; //BRITISH ENGLISH
     else index = 0; //THERE ARE OTHER LANGUAGES BUT I'M SO BORED AND NOBODY WILL USE THIS ANYWAY, IF SOME TAIWANESE PEOPLE NEEDS THIS YOU ARE FREE TO CONTACT ME
 
     if( !title_names[index].empty() ) return title_names[index]; //if we have a string for the language we return it
@@ -914,6 +915,7 @@ std::string SaveFile::getBestSuitableAuthor(const s32 theLanguage) const {
     else if( theLanguage == 8 ) index = 8; //DUTCH
     else if( theLanguage == 9 ) index = 10; //PORTUGUESE
     else if( theLanguage == 10 ) index = 11; //RUSSIAN
+    else if( theLanguage == 12 ) index = 1; //BRITISH ENGLISH
     else index = 0; //THERE ARE OTHER LANGUAGES BUT I'M SO BORED AND NOBODY WILL USE THIS ANYWAY, IF SOME TAIWANESE PEOPLE NEEDS THIS YOU ARE FREE TO CONTACT ME
 
     if( !title_authors[index].empty() ) return title_authors[index]; //if we have a string for the language we return it
