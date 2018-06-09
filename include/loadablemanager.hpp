@@ -43,7 +43,10 @@ T& LoadableManager<T>::loadResource(const std::string& thePath) {
 template<class T>
 void LoadableManager<T>::addResource(void* theData, const std::size_t theSize, const std::string& theID) {
     T buffer;
-    if( buffer.loadFromMemory(theData, theSize) ) loadable_map.insert(std::make_pair(theID, buffer));
+    auto it = loadable_map.find(theID);
+    if( it == loadable_map.end() )
+        if( buffer.loadFromMemory(theData, theSize) )
+            loadable_map.insert(std::make_pair(theID, buffer));
 }
 
 typedef LoadableManager<Font> FontManager;
