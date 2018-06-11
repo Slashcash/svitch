@@ -19,9 +19,14 @@ class MainState : public State, public LogWriter {
         unsigned int save_selected;
 
         std::vector<Sprite> cover_arts;
-        std::vector<Sprite> cover_arts_frames;
+        Text game_title;
+        Text game_author;
+        Text game_user;
 
         void buildCarousel();
+        void buildTitleInfo();
+        void buildScreen();
+
         void changeSelected(unsigned int theSelection);
         std::string chooseExportFileName() const;
 

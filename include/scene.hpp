@@ -23,7 +23,7 @@ class Scene : public Node {
         void addToLayer(Node* theNode, const unsigned int theLayerNum); //adds a node to the specified layer
         void detachFromLayer(const Node* theNode, const unsigned int theLayerNum); //detaches a node from the specified layer
         virtual Size getSize() const { return scene_size; }
-        void setSize(const Size& theSize) { scene_size = theSize; }
+        void setSize(const Size& theSize) { scene_size = theSize;  }
 };
 
 #endif // _SCENE_HPP_

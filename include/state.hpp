@@ -15,6 +15,7 @@ typedef std::pair<InputEvent, Signal> InputSignal; //an InputSignal is a pair of
 
 class State : public Signaler, public Observer {
     private:
+        friend class Gui;
         bool request_to_exit; //if set to true this state will be popped out as soon as possible
         bool request_to_shutdown; //if set to true the program will shut down as soon as possible
 

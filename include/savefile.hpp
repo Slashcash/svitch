@@ -65,21 +65,21 @@ class SaveFile : public LogWriter {
         OPResult extractSVIToPath(const std::string& theSVIPath, const std::string& theDestinationPath);
 
 
-        public:
-            u64 getTitleID() const { return title_id; }
-            std::vector<std::string> getTitleNames() const { return title_names; }
-            std::vector<std::string> getTitleAuthors() const { return title_authors; }
-            std::string getBestSuitableName(const s32 theLanguage) const;
-            std::string getBestSuitableAuthor(const s32 theLanguage) const; //these two functions return the name for the specified language, or the closest one if that is not available
-            std::string getIcon() const { return icon; }
-            #ifndef EMULATOR
-            u128 getUserID() const { return user_id; }
-            std::string getUserName() const { return account_name; }
-            #endif
+    public:
+        u64 getTitleID() const { return title_id; }
+        std::vector<std::string> getTitleNames() const { return title_names; }
+        std::vector<std::string> getTitleAuthors() const { return title_authors; }
+        std::string getBestSuitableName(const s32 theLanguage) const;
+        std::string getBestSuitableAuthor(const s32 theLanguage) const; //these two functions return the name for the specified language, or the closest one if that is not available
+        std::string getIcon() const { return icon; }
+        #ifndef EMULATOR
+        u128 getUserID() const { return user_id; }
+        std::string getUserName() const { return account_name; }
+        #endif
 
-            static std::vector<SaveFile> getAllSaveFiles(); //gets all the savefiles found on the system
-            OPResult extractToSVIFile(const std::string& theSVIPath);
-            OPResult importFromSVIFile(const SVIFile& theSVIFile);
+        static std::vector<SaveFile> getAllSaveFiles(); //gets all the savefiles found on the system
+        OPResult extractToSVIFile(const std::string& theSVIPath);
+        OPResult importFromSVIFile(const SVIFile& theSVIFile);
 };
 
 #endif // _SAVEFILE_HPP_
