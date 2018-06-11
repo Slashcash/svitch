@@ -11,6 +11,9 @@ const std::string ROMFS_PATH = "romfs:/";
 #else
 const std::string ROMFS_PATH = BASE_PATH + "romfs/";
 #endif
+const std::string FONT_PATH = ROMFS_PATH + "fonts/";
+const std::string TEXTURE_PATH = ROMFS_PATH + "textures/";
+
 const std::string EXPORT_PATH = BASE_PATH + "saves/";
 const std::string IMPORT_PATH = BASE_PATH + "saves/";
 const std::string BACKUP_PATH = BASE_PATH + IMPORT_PATH + "backup/";

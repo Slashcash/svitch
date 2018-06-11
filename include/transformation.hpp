@@ -6,15 +6,17 @@
 class Transformation {
     private:
         Coordinate position;
+        Coordinate origin;
         double rotation;
         Vector2<float> scaling;
 
     public:
-        Transformation(const Coordinate thePosition = Coordinate(0, 0), const double theRotation = 0, const Vector2<float> theScaling = Vector2<float>(1, 1) )  { position = thePosition; rotation = theRotation; scaling = theScaling; }
+        Transformation(const Coordinate thePosition = Coordinate(0, 0), const double theRotation = 0, const Vector2<float> theScaling = Vector2<float>(1, 1), const Coordinate theOrigin = Coordinate(0, 0) )  { origin = theOrigin; position = thePosition; rotation = theRotation; scaling = theScaling; }
 
         Coordinate getPosition() const { return position; }
         double getRotation() const { return rotation;  }
         Vector2<float> getScaling() const { return scaling; }
+        Coordinate getOrigin() const { return origin; }
 
         void setPosition(const Coordinate& theCoordinate) { position = theCoordinate; }
         void setPosition(const unsigned int theX, const unsigned int theY) { position = Coordinate(theX, theY); }
@@ -29,8 +31,11 @@ class Transformation {
         void setRotation(const double theRotation) { rotation = theRotation; }
         void rotate(const double theRotation) { rotation = rotation + theRotation; }
 
+        void setOrigin(const Coordinate& theOrigin) { origin = theOrigin; }
+        void setOrigin(const int theX, const int theY) { origin = Coordinate(theX, theY); }
+
         Coordinate transformCoordinate(const Coordinate& toBeTransformed) const;
-        Transformation operator*(const Transformation& theTransformation) const { return Transformation(position + theTransformation.getPosition(), rotation + theTransformation.rotation, scaling * theTransformation.getScaling()); } //combines two transformation
+        Transformation operator*(const Transformation& theTransformation) const { return Transformation(position + theTransformation.getPosition(), rotation + theTransformation.rotation, scaling * theTransformation.getScaling(), origin); } //combines two transformation
 };
 
 #endif // _TRANSFORMATION_HPP_

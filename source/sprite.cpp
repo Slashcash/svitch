@@ -14,3 +14,7 @@ void Sprite::drawCurrent(RenderSurface& theTarget, const Transformation& theTran
         }
     }
 }
+
+std::vector<u32> Sprite::scalingAlgorithm(const std::vector<u32>* theTextureData) {
+
+}

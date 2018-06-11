@@ -15,58 +15,8 @@ MainState::MainState() {
     //variable initialization
     save_selected = 0;
 
-    //texts initialization
-    game_userid.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
-    game_userid.setCharacterSize(25);
-    game_author.attachChild(&game_userid);
-
-    game_author.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
-    game_author.setCharacterSize(35);
-
-    game_title.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
-    game_title.setCharacterSize(35);
-    game_title.attachChild(&game_author);
-
-    scene.addToLayer(&game_title, 0);
-
-    arrow_info.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
-    arrow_info.setMsg(LangFile::getInstance()->getValue("press_arrow_scroll"));
-    arrow_info.setPosition(100, 600);
-
-    export_info.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
-    export_info.setMsg(LangFile::getInstance()->getValue("press_y_export"));
-    arrow_info.attachChild(&export_info);
-    export_info.setPosition(0, arrow_info.getSize().y + 10);
-
-    import_info.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
-    import_info.setMsg(LangFile::getInstance()->getValue("press_x_import"));
-    export_info.attachChild(&import_info);
-    import_info.setPosition(0, export_info.getSize().y + 10);
-
-    exit_info.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
-    exit_info.setMsg(LangFile::getInstance()->getValue("press_b_exit"));
-    import_info.attachChild(&exit_info);
-    exit_info.setPosition(0, import_info.getSize().y + 10);
-
-    app_title.setFont(font_manager.getResource(ROMFS_PATH+"fonts/roboto.ttf"));
-    app_title.setMsg(APP);
-    app_title.setPosition( (Window::getInstance()->getSize().x / 2) - (app_title.getSize().x /2), 25 );
-    scene.addToLayer(&app_title, 0);
-
-    //setting the inputs
+    //setting inputs
     std::vector<InputSignal> signals;
-    InputEvent event_b(InputEvent::BUTTON_PRESSED, KEY_B);
-    Signal signal_b("EXIT");
-    signals.push_back(std::make_pair(event_b, signal_b));
-
-    InputEvent event_x(InputEvent::BUTTON_PRESSED, KEY_X);
-    Signal signal_x("IMPORT");
-    signals.push_back(std::make_pair(event_x, signal_x));
-
-    InputEvent event_y(InputEvent::BUTTON_PRESSED, KEY_Y);
-    Signal signal_y("EXPORT");
-    signals.push_back(std::make_pair(event_y, signal_y));
-
     //why changing buttons? because yuzu is a bitch
     #ifndef EMULATOR
     InputEvent event_l(InputEvent::BUTTON_PRESSED, BUTTON_DLEFT);
@@ -97,65 +47,29 @@ MainState::MainState() {
         texture_manager.addResource((void*)(&(temp_icon[0])), temp_icon.size(), id.str());
     }
 
-    //writing the name of first save on screen
-    if( savefiles.empty() ) {
-        game_title.setMsg(LangFile::getInstance()->getValue("no_save"));
-        game_title.setPosition( (Window::getInstance()->getSize().x / 2) - (game_title.getSize().x /2), (Window::getInstance()->getSize().y / 2) - (game_title.getSize().y / 2) );
-
-        game_author.setMsg(LangFile::getInstance()->getValue("press_b_exit"));
-        game_author.setPosition( (game_title.getSize().x / 2) - (game_author.getSize().x / 2), game_title.getSize().y + 10 );
-    }
-
-    else {
-        buildTitleInfo();
-        scene.addToLayer(&arrow_info, 0);
-    }
-}
-
-void MainState::buildTitleInfo() {
-    const unsigned int SPACING = 10;
-
-    game_title.setMsg(savefiles[save_selected].getBestSuitableName(Gui::getInstance()->getSystemLanguage()));
-    game_title.setPosition( (Window::getInstance()->getSize().x / 2) - (game_title.getSize().x /2), (Window::getInstance()->getSize().y / 2) - (game_title.getSize().y / 2) );
-
-    game_author.setMsg(savefiles[save_selected].getBestSuitableAuthor(Gui::getInstance()->getSystemLanguage()));
-    game_author.setPosition( (game_title.getSize().x / 2) - (game_author.getSize().x / 2), game_title.getSize().y + SPACING );
-
-    std::string user_id_temp_str;
-    #ifdef EMULATOR
-    user_id_temp_str = "TEST";
-    #else
-    user_id_temp_str = LangFile::getInstance()->getValue("user") + ": " + savefiles[save_selected].getUserName();
-    #endif
-
-    game_userid.setMsg(user_id_temp_str);
-    game_userid.setPosition( (game_author.getSize().x / 2) - (game_userid.getSize().x / 2), game_author.getSize().y + SPACING );
+    buildCarousel();
+    changeSelected(0);
 }
 
 void MainState::onNotify(const Signal& theSignal) {
-
-    if( theSignal.getName() == "EXIT" ) requestToShutDown();
     if( theSignal.getName() == "RIGHT" && !savefiles.empty() && save_selected < savefiles.size() - 1 ) emitSignal(Signal("SCROLL_RIGHT"));
-    if( theSignal.getName() == "SCROLL_RIGHT" ) { save_selected++; buildTitleInfo(); }
+    if( theSignal.getName() == "SCROLL_RIGHT" ) changeSelected(save_selected+1);
 
     if( theSignal.getName() == "LEFT" && !savefiles.empty() && save_selected > 0 ) emitSignal(Signal("SCROLL_LEFT"));
-    if( theSignal.getName() == "SCROLL_LEFT" ) { save_selected--; buildTitleInfo(); }
-
-    if( theSignal.getName() == "EXPORT" ) export_svi();
-    if( theSignal.getName() == "IMPORT" ) import_svi();
+    if( theSignal.getName() == "SCROLL_LEFT" ) changeSelected(save_selected-1);
 }
 
-void MainState::export_svi() {
-    char temp_buffer[256];
-    std::string path = EXPORT_PATH + chooseExportFileName();
+void MainState::changeSelected(unsigned int theSelection) {
+    const float SCALE_FACTOR = 1.2;
 
-    OPResult res = savefiles[save_selected].extractToSVIFile(path);
-    std::string result_str;
-    if( res ) result_str = LangFile::getInstance()->getValue("extract_success") + " " + path;
-    else result_str = LangFile::getInstance()->getValue("extract_failed") + " " + std::string(itoa(res.getErrorNumber(), temp_buffer, 10)) + "-" + std::string(itoa(res.getLibNXErrorNumber(), temp_buffer, 10));
+    int move_factor = save_selected - theSelection;
+    save_selected = theSelection;
 
-    ResultState* res_state = new ResultState(result_str);
-    Gui::getInstance()->addState(res_state);
+    cover_arts_frames.front().move((cover_arts_frames.front().getSize().x + FRAME_TO_FRAME_SPACING)*move_factor, 0);
+
+    for(auto it = cover_arts_frames.begin(); it < cover_arts_frames.end(); it++) it->setScale(1, 1);
+    cover_arts_frames[save_selected].setScale(SCALE_FACTOR, SCALE_FACTOR);
+    cover_arts_frames[save_selected+1].setScale(1/SCALE_FACTOR, 1/SCALE_FACTOR);
 }
 
 std::string MainState::chooseExportFileName() const {
@@ -189,7 +103,38 @@ std::string MainState::chooseExportFileName() const {
     return chosen_name + ".svi";
 }
 
-void MainState::import_svi() {
-    ImportState* import_state = new ImportState(savefiles[save_selected]);
-    Gui::getInstance()->addState(import_state);
+void MainState::buildCarousel() {
+    //building the carousel
+    if( !cover_arts_frames.empty() ) scene.detachChild(&cover_arts_frames.front()); //just deleting the first to delete all the carousel
+    cover_arts_frames.clear();
+    cover_arts.clear();
+    cover_arts_frames.reserve(savefiles.size());
+    cover_arts.reserve(savefiles.size());
+    const int FRAME_COVERART_SPACING = 10;
+    for( auto it = savefiles.begin(); it < savefiles.end(); it++ ) {
+        std::ostringstream temp;
+        temp << it->getTitleID();
+
+        cover_arts_frames.push_back(Sprite(texture_manager.getResource(TEXTURE_PATH+"coverart_frame.png")));
+        cover_arts_frames.back().setOrigin(cover_arts_frames.back().getSize().x/2, cover_arts_frames.back().getSize().y/2);
+
+        cover_arts.push_back(Sprite(texture_manager.getResource(temp.str())));
+        cover_arts.back().setOrigin(cover_arts.back().getSize().x/2, cover_arts.back().getSize().y/2);
+
+        if( it == savefiles.begin() ) {
+            cover_arts_frames.back().setPosition(scene.getSize().x / 2, scene.getSize().y / 2);
+            scene.addToLayer(&cover_arts_frames.back(), 0);
+        }
+
+        else {
+            cover_arts_frames.back().setPosition((cover_arts_frames.end()-2)->getSize().x + FRAME_TO_FRAME_SPACING, 0);
+            (cover_arts_frames.end()-2)->attachChild(&cover_arts_frames.back());
+        }
+
+        cover_arts.back().setPosition(0, 0);
+        float temp_scale_x = float((cover_arts_frames.back().getSize().x - FRAME_COVERART_SPACING*2 )) / cover_arts.back().getSize().x;
+        float temp_scale_y = float((cover_arts_frames.back().getSize().y - FRAME_COVERART_SPACING*2 )) / cover_arts.back().getSize().y;
+        cover_arts.back().setScale(temp_scale_x, temp_scale_y);
+        cover_arts_frames.back().attachChild(&cover_arts.back());
+    }
 }

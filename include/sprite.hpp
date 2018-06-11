@@ -11,6 +11,7 @@ class Sprite : public Node {
         const Texture* texture;
 
         virtual void drawCurrent(RenderSurface& theTarget, const Transformation& theTransformation) const;
+        std::vector<u32> scalingAlgorithm(const std::vector<u32>* theTextureData);
 
     public:
         Sprite() : Node() { texture = nullptr; }

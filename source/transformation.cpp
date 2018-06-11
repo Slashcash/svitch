@@ -6,13 +6,17 @@ Coordinate Transformation::transformCoordinate(const Coordinate& toBeTransformed
     //the coordinate after the calculated transformation
     Coordinate calculated;
 
-    //calculating the translation
-    calculated.x = toBeTransformed.x + getPosition().x;
-    calculated.y = toBeTransformed.y + getPosition().y;
+    //taking the origin into account
+    calculated.x = toBeTransformed.x - getOrigin().x;
+    calculated.y = toBeTransformed.y - getOrigin().y;
 
     //calculating the scaling
     calculated.x = calculated.x * getScaling().x;
     calculated.y = calculated.y * getScaling().y;
+
+    //calculating the translation
+    calculated.x = calculated.x + getPosition().x;
+    calculated.y = calculated.y + getPosition().y;
 
     //calculating the rotation
     /*calculated.x = calculated.x * cos(getRotation()) - calculated.y * sin(getRotation());

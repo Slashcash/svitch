@@ -8,15 +8,17 @@
 
 class RenderTexture : public RenderSurface, public Texture {
     private:
-        std::vector<u32> draw_texture_data;
+        std::vector<u32> original_texture_data;
+
+        virtual void setPixelCurrent(const int thePosition, const Color& theColor);
+        virtual Color getPixelCurrent(const int thePosition) { return texture_data[thePosition]; }
 
     public:
         RenderTexture() : Texture() { render_size = Size(0, 0); }
-
         OPResult loadFromFile(const std::string& thePath); //loads a texture from a file
-        void clear() { draw_texture_data = texture_data; }
-        virtual void setPixelCurrent(const int thePosition, const Color& theColor);
-        const std::vector<u32>* getRawTextureData() const { return &draw_texture_data; } //gets the raw RGBA8 data for this texture
+        void clear() { texture_data = original_texture_data; }
+        const std::vector<u32>* getRawTextureData() const { return &texture_data; } //gets the raw RGBA8 data for this texture
+
 };
 
 #endif
