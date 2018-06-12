@@ -2,11 +2,19 @@
 #define _SCENE_HPP_
 
 #include <vector>
+#include <queue>
 
 #include "node.hpp"
 #include "layer.hpp"
 
 /*a scene is just a vector of layers that can be drawn on a window*/
+
+struct Transition {
+    std::queue<Transformation> transformation_queue;
+    long unsigned int update_rate;
+    long unsigned int update_count;
+    Node* element;
+};
 
 class Scene : public Node {
     private:
@@ -14,16 +22,20 @@ class Scene : public Node {
         static const int SCENE_DEFAULT_HEIGHT = 720;
 
         std::vector<Layer> layers; //all the  layers from this scene
+        std::vector<Transition> transitions;
         virtual void drawCurrent(RenderSurface& theTarget, const Transformation& theTransformation = Transformation()) const final;
         Size scene_size; //the size of the scene, the scene will be scaled to fit it
 
+        void applyTransitions(const long unsigned int theElapsedFrame);
+
     public:
         Scene(const Size& theSize = Size(SCENE_DEFAULT_WIDTH, SCENE_DEFAULT_HEIGHT)) : Node() { scene_size = theSize; }
-
+        virtual void update(const long unsigned int theFrameElapsed);
         void addToLayer(Node* theNode, const unsigned int theLayerNum); //adds a node to the specified layer
         void detachFromLayer(const Node* theNode, const unsigned int theLayerNum); //detaches a node from the specified layer
         virtual Size getSize() const { return scene_size; }
         void setSize(const Size& theSize) { scene_size = theSize;  }
+        void addTransition(Node* theNode, const long unsigned int theUpdateRate, std::queue<Transformation> theTransformationQueue);
 };
 
 #endif // _SCENE_HPP_

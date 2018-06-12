@@ -71,12 +71,19 @@ void MainState::onNotify(const Signal& theSignal) {
 }
 
 void MainState::changeSelected(unsigned int theSelection) {
-    const float SCALE_FACTOR = 1.2;
-
     int move_factor = save_selected - theSelection;
     save_selected = theSelection;
 
-    cover_arts.front().move((cover_arts.front().getSize().x + FRAME_TO_FRAME_SPACING)*move_factor, 0);
+    //building the transition
+    const unsigned int TRANSITION_NUM = 6;
+    const unsigned int TRANSITION_LENGTH = 1; //in seconds;
+    const unsigned int MOVEMENT = (cover_arts.front().getSize().x + FRAME_TO_FRAME_SPACING)*move_factor / 6;
+    std::queue<Transformation> transformation_queue;
+
+    for(unsigned int i = 0; i < TRANSITION_NUM; i++) transformation_queue.push(Transformation(Coordinate(MOVEMENT, 0)));
+    scene.addTransition(&cover_arts.front(), 60*TRANSITION_LENGTH / TRANSITION_NUM, transformation_queue);
+
+    const float SCALE_FACTOR = 1.2;
 
     for(auto it = cover_arts.begin(); it < cover_arts.end(); it++) it->setScale(1, 1);
     cover_arts[save_selected].setScale(SCALE_FACTOR, SCALE_FACTOR);

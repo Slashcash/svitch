@@ -2,6 +2,9 @@
 
 Node::Node() : Transformation(), Drawable() {
     parent = nullptr;
+    is_active = true;
+    frames_elapsed = 0;
+    frames_update = 0;
 }
 
 void Node::draw(RenderSurface& theTarget, const Transformation& theTransformation) const {
@@ -31,4 +34,15 @@ Transformation Node::getTotalTransformation() const {
     }
 
     return result;
+}
+
+void Node::update(const unsigned int theFrameElapsed) {
+    frames_elapsed = frames_elapsed + theFrameElapsed;
+
+    if( (is_active) && (frames_elapsed >= frames_update || frames_update == 0) ) {
+        updateCurrent();
+        frames_elapsed = 0;
+    }
+
+    for( auto it = children.begin(); it < children.end(); it++ ) (*it)->update(theFrameElapsed);
 }

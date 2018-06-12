@@ -3,7 +3,7 @@
 FontManager State::font_manager;
 TextureManager State::texture_manager;
 
-void State::updateBase() {
+void State::updateBase(const long unsigned int theElapsedFrame) {
     InputEvent buffer;
     while( Window::getInstance()->getInputEvents(buffer) ) {
         for(auto it = input_signals.begin(); it < input_signals.end(); it++) {
@@ -12,6 +12,8 @@ void State::updateBase() {
             }
         }
     }
+
+    scene.update(theElapsedFrame);
 
     update();
 }

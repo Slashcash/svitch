@@ -16,7 +16,7 @@ class State;
 
 class Gui : public LogWriter {
     private:
-        static const int APPTITLE_Y_POSITION = 5;
+        static const int APPTITLE_Y_POSITION = 25;
         static const int APPTITLE_SPACING = 5;
 
         static Gui* instance;

@@ -113,7 +113,7 @@ void Gui::run() {
 
     while( Window::getInstance()->isOpen() && !states.empty() ) {
         //updating
-        states.top()->updateBase();
+        states.top()->updateBase(1); //why 1? because every time we reach here 1 frame is passed
 
         //checking if the current state requested an exit
         if( states.top()->isRequestedToExit() ) { dropState(); continue; }

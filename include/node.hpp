@@ -15,6 +15,7 @@ class Bound {
     public:
         Coordinate top_left;
         Size size;
+        bool is_active; //whether or not the node gets automatically updated
 
         Bound() { top_left = Coordinate(0, 0); size = Size(0, 0); }
         Bound(const Coordinate& theCoordinate, const Size& theSize) { top_left = theCoordinate; size = theSize; }
@@ -24,8 +25,12 @@ class Node : public Transformation, public Drawable {
     private:
         Node* parent; //the parent node, lifecycle to be managed separately
         std::vector<Node*> children; //all the children. Lifecycle to be managed externally
+        long unsigned int frames_elapsed;
+        long unsigned int frames_update; //this node gets automatically updated everytime frames_elapesd == frames update;
+        bool is_active; //whether or not the node gets automatically updated
 
         virtual void draw(RenderSurface& theTarget, const Transformation& theTransformation = Transformation()) const final;
+        virtual void updateCurrent() {} //override this if you need to update a node
         virtual void drawCurrent(RenderSurface& theTarget, const Transformation& theTransformation) const = 0; //derive and implement this
         virtual void setParent(Node* theParent) final { parent = theParent; }
         virtual Node* getParent() const final { return parent; }
@@ -33,7 +38,10 @@ class Node : public Transformation, public Drawable {
     public:
         Node();
 
+        virtual void update(const unsigned int theFrameElapsed); //this should unfortunately be FINAL but since i am a lazy fuck it is not (the reason is in scene.hpp)
         virtual Size getSize() const = 0;
+        virtual long unsigned int getUpdateRate() const { return frames_update; }
+        virtual void setUpdateRate(const long unsigned int theUpdateRate) { frames_update = theUpdateRate; }
         virtual Bound getBound() const final { return Bound(getPosition(), getSize()); }
         virtual Bound getGlobalBound() const final { return Bound(getGlobalPosition(), getSize()); }
         virtual void attachChild(Node* theChild) final { children.push_back(theChild); theChild->setParent(this); }

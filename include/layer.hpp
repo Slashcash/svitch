@@ -17,6 +17,8 @@ class Layer : public Drawable {
         std::vector<Node*> nodes;
 
         virtual void draw(RenderSurface& theTarget, const Transformation& theTransformation = Transformation()) const final;
+        virtual void update(const unsigned int theFrameElapsed);
+
 };
 
 #endif // _LAYER_HPP_

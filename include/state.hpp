@@ -30,7 +30,7 @@ class State : public Signaler, public Observer {
 
         virtual void drawBase() const final { Window::getInstance()->draw(scene); draw(); }
         virtual void draw() const {} //override this if you need some additional drawing
-        virtual void updateBase() final;
+        virtual void updateBase(const long unsigned int theElapsedFrame) final;
         virtual void update() {} //override this if you need additional upgrading
         virtual void onNotify(const Signal& theSignal) {} //implement this if you need signal handling
         void setInputSignal(const std::vector<InputSignal>& theInputSignal) { input_signals.clear(); for( auto it = theInputSignal.begin(); it < theInputSignal.end(); it++ ) input_signals.push_back(*it); }
