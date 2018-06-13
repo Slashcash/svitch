@@ -149,7 +149,7 @@ void MainState::buildCarousel() {
 
         float temp_scale_x = float(COVERART_WIDTH / cover_arts.back().getSize().x);
         float temp_scale_y = float(COVERART_HEIGHT / cover_arts.back().getSize().y);
-        cover_arts.back().setScale(temp_scale_x, temp_scale_y);
+        //cover_arts.back().setScale(temp_scale_x, temp_scale_y);
     }
 }
 
@@ -182,6 +182,7 @@ void MainState::buildScreen() {
 
     if( !savefiles.empty() ) {
         buildCarousel();
+        changeSelected(0);
         buildTitleInfo();
     }
 
