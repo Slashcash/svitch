@@ -2,6 +2,7 @@
 #define _NODE_HPP_
 
 #include <vector>
+#include <queue>
 
 #include "drawable.hpp"
 #include "transformation.hpp"
@@ -21,6 +22,13 @@ class Bound {
         Bound(const Coordinate& theCoordinate, const Size& theSize) { top_left = theCoordinate; size = theSize; }
 };
 
+class Node;
+struct Transition {
+    std::queue<Transformation> transformation_queue;
+    long unsigned int update_rate;
+    long unsigned int update_count;
+};
+
 class Node : public Transformation, public Drawable {
     private:
         Node* parent; //the parent node, lifecycle to be managed separately
@@ -28,12 +36,14 @@ class Node : public Transformation, public Drawable {
         long unsigned int frames_elapsed;
         long unsigned int frames_update; //this node gets automatically updated everytime frames_elapesd == frames update;
         bool is_active; //whether or not the node gets automatically updated
+        std::vector<Transition> transitions;
 
         virtual void draw(RenderSurface& theTarget, const Transformation& theTransformation = Transformation()) const final;
         virtual void updateCurrent() {} //override this if you need to update a node
         virtual void drawCurrent(RenderSurface& theTarget, const Transformation& theTransformation) const = 0; //derive and implement this
         virtual void setParent(Node* theParent) final { parent = theParent; }
         virtual Node* getParent() const final { return parent; }
+        virtual void applyTransitions(const long unsigned int theElapsedFrame);
 
     public:
         Node();
@@ -49,6 +59,7 @@ class Node : public Transformation, public Drawable {
         virtual void detachAllChildren() final { for(auto it = children.begin(); it < children.end(); it++) (*it)->parent = nullptr;  children.clear(); }
         virtual Transformation getTotalTransformation() const final;
         virtual Coordinate getGlobalPosition() const final { return getTotalTransformation().getPosition(); }
+        virtual void addTransition(const long unsigned int theUpdateRate, std::queue<Transformation> theTransformationQueue);
 };
 
 #endif // _NODE_HPP_
