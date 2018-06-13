@@ -28,6 +28,7 @@ Size Text::getSizeByIndex(const unsigned int theStartPosition, const unsigned in
 
         unsigned int x_size = 0;
         std::vector<unsigned int> y_size;
+        y_size.push_back(0); //pushing 0 just in case it ends up being empty
         for(unsigned int i = theStartPosition; i < theEndPosition; i++) {
             Size glyph_size;
 
@@ -85,7 +86,9 @@ void Text::drawCurrent(RenderSurface& theTarget, const Transformation& theTransf
 }
 
 std::vector<uint32_t> Text::convertToUTF8(const std::string& theMSG) {
-    for(unsigned int i = 0; i < msg.size(); ) {
+    std::vector<uint32_t> buffer;
+
+    for(unsigned int i = 0; i < theMSG.size(); ) {
         Size glyph_size;
 
         //converting to utf-8
@@ -93,19 +96,21 @@ std::vector<uint32_t> Text::convertToUTF8(const std::string& theMSG) {
         ssize_t skip = decode_utf8(&utf8_char,(uint8_t*)(&theMSG[i]));
         if( skip <= 0 ) break;
 
-        msg.push_back(utf8_char);
+        buffer.push_back(utf8_char);
         i = i + skip;
     }
+
+    return buffer;
 }
 
 void Text::calculateFixedWidth() {
     if( fixed_width > 0 ) {
-        std::size_t temp_end_position = end_position+1; //past the last element
+        std::size_t temp_end_position = msg.size()+1; //past the last element
         unsigned int temp_width = 0;
         do {
             temp_end_position--;
             temp_width = getSizeByIndex(0, temp_end_position).x;
-        }while(temp_width > fixed_width || temp_end_position == 0);
+        }while(temp_width > fixed_width && temp_end_position != 0);
 
         end_position = temp_end_position;
     }

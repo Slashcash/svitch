@@ -20,14 +20,12 @@ class MainState : public State, public LogWriter {
         unsigned int carousel_page;
 
         std::vector<Sprite> cover_arts;
-        Text game_title;
-        Text game_author;
-        Text game_user;
+        std::vector<Text> names;
+        std::vector<Text> authors;
 
         void buildCarousel();
-        void buildTitleInfo();
         void buildScreen();
-        void buildPage();
+        void buildPage(const unsigned int thePage);
 
         void changeSelected(unsigned int theSelection);
         std::string chooseExportFileName() const;

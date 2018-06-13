@@ -29,8 +29,6 @@ class Gui : public LogWriter {
         //SOME GRAPHICAL
         Texture background_texture;
         Sprite background_sprite; //the background
-        Font apptitle_font;
-        Text apptitle_text;
 
         Gui();
 

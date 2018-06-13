@@ -14,7 +14,6 @@
 MainState::MainState() {
     //variable initialization
     save_selected = 0;
-    carousel_page = 0;
 
     //setting inputs
     std::vector<InputSignal> signals;
@@ -48,18 +47,6 @@ MainState::MainState() {
         texture_manager.addResource((void*)(&(temp_icon[0])), temp_icon.size(), id.str());
     }
 
-    //setting some fonts
-    game_title.setFont(font_manager.getResource(FONT_PATH+"roboto.ttf"));
-    game_title.attachChild(&game_author);
-    game_title.setCharacterSize(35);
-
-    game_author.setFont(font_manager.getResource(FONT_PATH+"roboto.ttf"));
-    game_author.attachChild(&game_user);
-    game_author.setCharacterSize(35);
-
-    game_user.setFont(font_manager.getResource(FONT_PATH+"roboto.ttf"));
-    game_user.setCharacterSize(20);
-
     buildScreen();
 }
 
@@ -72,7 +59,7 @@ void MainState::onNotify(const Signal& theSignal) {
 }
 
 void MainState::changeSelected(unsigned int theSelection) {
-    int move_factor = save_selected - theSelection;
+    /*int move_factor = save_selected - theSelection;
     save_selected = theSelection;
 
     //building the transition
@@ -90,7 +77,7 @@ void MainState::changeSelected(unsigned int theSelection) {
     cover_arts[save_selected].setScale(SCALE_FACTOR, SCALE_FACTOR);
     cover_arts[save_selected+1].setScale(1/SCALE_FACTOR, 1/SCALE_FACTOR);
 
-    buildTitleInfo();
+    buildTitleInfo();*/
 }
 
 std::string MainState::chooseExportFileName() const {
@@ -127,68 +114,86 @@ std::string MainState::chooseExportFileName() const {
 void MainState::buildCarousel() {
     const unsigned int COVERART_WIDTH = 256;
     const unsigned int COVERART_HEIGHT = 256;
+    const std::string FONT = FONT_PATH + "roboto.ttf";
+    const unsigned int CHAR_SIZE = 15;
+    const Color CHAR_COLOR = Color::WHITE;
+    const unsigned int FRAME_TO_TEXT_SPACING = 25;
+    const unsigned int TEXT_TO_TEXT_SPACING = 15;
+    const int LATERAL_SPACING = 0;
+    const unsigned int BORDER_SPACE = 98;
+    const unsigned int ELEMENT_PER_PAGE = 4;
 
-    //building the carousel
+//building the carousel
     cover_arts.clear();
     cover_arts.reserve(savefiles.size());
+
+    names.clear();
+    names.reserve(savefiles.size());
+
+    authors.clear();
+    authors.reserve(savefiles.size());
+
+    unsigned int i = 0;
     for( auto it = savefiles.begin(); it < savefiles.end(); it++ ) {
         std::ostringstream temp;
         temp << it->getTitleID();
 
         cover_arts.push_back(Sprite(texture_manager.getResource(temp.str())));
         cover_arts.back().setOrigin(cover_arts.back().getSize().x/2, cover_arts.back().getSize().y/2);
+        if( (i % ELEMENT_PER_PAGE) == 0 ) cover_arts.back().setPosition(BORDER_SPACE + cover_arts.back().getSize().x / 2, scene.getSize().y /2 );
+        else cover_arts.back().setPosition((cover_arts.end()-2)->getPosition().x + (cover_arts.end()-2)->getSize().x + FRAME_TO_FRAME_SPACING, scene.getSize().y /2);
 
         float temp_scale_x = float(COVERART_WIDTH / cover_arts.back().getSize().x);
         float temp_scale_y = float(COVERART_HEIGHT / cover_arts.back().getSize().y);
-        //cover_arts.back().setScale(temp_scale_x, temp_scale_y);
+        cover_arts.back().setScale(temp_scale_x, temp_scale_y);
+
+        authors.push_back(Text(font_manager.getResource(FONT), it->getBestSuitableAuthor(Gui::getInstance()->getSystemLanguage())));
+        authors.back().setFixedWidth(COVERART_WIDTH);
+        authors.back().setCharacterSize(CHAR_SIZE);
+        authors.back().setColor(CHAR_COLOR);
+        authors.back().setPosition(-(cover_arts.back().getSize().x / 2) + LATERAL_SPACING, -(cover_arts.back().getSize().x / 2) - FRAME_TO_TEXT_SPACING);
+        cover_arts.back().attachChild(&authors.back());
+
+        names.push_back(Text(font_manager.getResource(FONT), it->getBestSuitableName(Gui::getInstance()->getSystemLanguage())));
+        names.back().setFixedWidth(COVERART_WIDTH);
+        names.back().setCharacterSize(CHAR_SIZE);
+        names.back().setColor(CHAR_COLOR);
+        names.back().setPosition(0, -names.back().getSize().y -TEXT_TO_TEXT_SPACING);
+        authors.back().attachChild(&names.back());
+
+        i++;
     }
 
-    buildPage();
+    buildPage(0);
 }
 
-void MainState::buildPage() {
-    const unsigned int BORDER_SPACE = 98;
+void MainState::buildPage(const unsigned int thePage) {
     const unsigned int ELEMENT_PER_PAGE = 4;
 
+    //destroying the old page
     unsigned int start_pos = carousel_page * ELEMENT_PER_PAGE;
     unsigned int end_position = ((carousel_page + 1) * ELEMENT_PER_PAGE);
     if( end_position > cover_arts.size() ) end_position = cover_arts.size();
 
     for(unsigned int i = start_pos; i < end_position; i++) {
-        if( i == start_pos ) cover_arts[i].setPosition(BORDER_SPACE + cover_arts[i].getSize().x / 2, scene.getSize().y /2 );
-        else cover_arts[i].setPosition(cover_arts[i-1].getPosition().x + cover_arts[i-1].getSize().x / 2 + BORDER_SPACE, scene.getSize().y /2);
+        scene.detachFromLayer(&cover_arts[i], 0);
+    }
+
+    carousel_page = thePage;
+
+    //building the new one
+    start_pos = carousel_page * ELEMENT_PER_PAGE;
+    end_position = ((carousel_page + 1) * ELEMENT_PER_PAGE);
+    if( end_position > cover_arts.size() ) end_position = cover_arts.size();
+
+    for(unsigned int i = start_pos; i < end_position; i++) {
         scene.addToLayer(&cover_arts[i], 0);
     }
 
 }
 
-void MainState::buildTitleInfo() {
-    const int POSITION_X = 20;
-    const int POSITION_Y = 100;
-    const int SPACING = 10;
-
-    scene.addToLayer(&game_title, 0);
-
-    game_title.setPosition(POSITION_X, POSITION_Y);
-    game_title.setMsg(savefiles[save_selected].getBestSuitableName(Gui::getInstance()->getSystemLanguage()));
-
-    game_author.setPosition(0, game_title.getSize().y + SPACING);
-    game_author.setMsg(savefiles[save_selected].getBestSuitableAuthor(Gui::getInstance()->getSystemLanguage()));
-
-    std::string user_string = LangFile::getInstance()->getValue("user");
-    #ifdef EMULATOR
-    user_string = user_string + "TEST";
-    #else
-    user_string = user_string + savefiles[save_selected].getUserName();
-    #endif
-    game_user.setPosition(0, game_author.getSize().y + SPACING);
-    game_user.setMsg(user_string);
-}
-
 void MainState::buildScreen() {
     if( !savefiles.empty() ) {
         buildCarousel();
-        changeSelected(0);
-        buildTitleInfo();
     }
 }

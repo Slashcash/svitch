@@ -37,11 +37,6 @@ Gui::Gui() {
     background_texture.loadFromFile(TEXTURE_PATH+"background.png");
     background_sprite.setTexture(background_texture);
 
-    apptitle_font.loadFromFile(FONT_PATH+"roboto.ttf");
-    apptitle_text.setFont(apptitle_font);
-    apptitle_text.setMsg(APP_TITLE);
-    apptitle_text.setPosition(Window::getInstance()->getSize().x / 2 - apptitle_text.getSize().x / 2, APPTITLE_Y_POSITION);
-
     //all the language supported by this software (add them here to support more of them)
     //supported_languages.push_back("en-US");
     supported_languages.push_back("en-GB");
@@ -122,7 +117,6 @@ void Gui::run() {
         //drawing
         Window::getInstance()->clear();
         Window::getInstance()->draw(background_sprite); //drawing the background
-        Window::getInstance()->draw(apptitle_text); //drawing the apptitle text
         states.top()->drawBase(); //drawing the actual state
         Window::getInstance()->update();
     }
@@ -147,11 +141,8 @@ Gui* Gui::getInstance() {
 }
 
 void Gui::addState(State* theState) {
-    const int Y_POSITION = APPTITLE_Y_POSITION + apptitle_text.getSize().y + APPTITLE_SPACING;
-
     states.push(theState);
-    theState->scene.setSize(Size(Window::getInstance()->getSize().x, Window::getInstance()->getSize().y - Y_POSITION));
-    theState->scene.setPosition(0, Y_POSITION);
+    theState->scene.setSize(Size(Window::getInstance()->getSize().x, Window::getInstance()->getSize().y));
 }
 
 void Gui::destroy() {
