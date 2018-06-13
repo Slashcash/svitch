@@ -2,7 +2,24 @@
 
 #include "text.hpp"
 
-Size Text::getSize() const {
+Text::Text() : Node() {
+    font = nullptr;
+    font_size = Font::DEFAULT_SCALABLE_SIZE;
+    font_color = Color::WHITE;
+    fixed_width = 0;
+    end_position = msg.size();
+}
+
+Text::Text(Font& theFont, const std::string& theMsg) : Node() {
+    font = &theFont;
+    msg = convertToUTF8(theMsg);
+    font_size = Font::DEFAULT_SCALABLE_SIZE;
+    font_color = Color::WHITE;
+    fixed_width = 0;
+    end_position = msg.size();
+}
+
+Size Text::getSizeByIndex(const unsigned int theStartPosition, const unsigned int theEndPosition) const {
     if( font == nullptr ) return Size(0, 0);
 
     else {
@@ -11,16 +28,10 @@ Size Text::getSize() const {
 
         unsigned int x_size = 0;
         std::vector<unsigned int> y_size;
-        for(unsigned int i = 0; i < msg.size(); ) {
+        for(unsigned int i = theStartPosition; i < theEndPosition; i++) {
             Size glyph_size;
 
-            //converting to utf-8
-            uint32_t utf8_char;
-            ssize_t skip = decode_utf8(&utf8_char,(uint8_t*)(&msg[i]));
-            if( skip <= 0 ) break;
-            i = i + skip;
-
-            font->getGlyphData(utf8_char, glyph_size);
+            font->getGlyphData(msg[i], glyph_size);
 
             if( i != msg.size() - 1 ) x_size = x_size + font->getGlyphAdvanceSize().x;
             else x_size = x_size + glyph_size.x; //if it is the last character we just add its size, not its advance
@@ -31,29 +42,28 @@ Size Text::getSize() const {
     }
 }
 
+Size Text::getSize() const {
+    Size temp = getSizeByIndex(0, msg.size());
+
+    if( fixed_width != 0 ) return Size(fixed_width, temp.y);
+    else return temp;
+}
+
 void Text::drawCurrent(RenderSurface& theTarget, const Transformation& theTransformation) const {
     if( font != nullptr ) {
         //setting the correct font size
         font->setFontSize(font_size);
 
         int pen_x = 0;
-        for(unsigned int i = 0; i < msg.size(); ) {
+        for(unsigned int i = 0; i < end_position; i++) {
             Size glyph_size;
 
-            //converting to utf-8
-            uint32_t utf8_char;
-            ssize_t skip = decode_utf8(&utf8_char,(uint8_t*)(&msg[i]));
-            if( skip <= 0 ) break;
-            i = i + skip;
+            std::vector<unsigned char>* raw_data = font->getGlyphData(msg[i], glyph_size);
 
-            std::vector<unsigned char>* raw_data = font->getGlyphData(utf8_char, glyph_size);
-
+            //alpha blending
             float opacity;
             for(unsigned int y = 0; y < glyph_size.y; y++ ) {
                 for(unsigned int x = 0; x < glyph_size.x; x++  ) {
-                    /*unsigned int pos = (y * glyph_size.x + x) * 4;
-                    Color pixel_color((*raw_data)[pos], (*raw_data)[pos+1], (*raw_data)[pos+2], (*raw_data)[pos+3]);
-                    theTarget.setPixel(Coordinate(pen_x+font->getGlyphBitmapSize().x+x, y-font->getGlyphBitmapSize().y), pixel_color, theTransformation);*/
                     Color background_color = theTarget.getPixel(Coordinate(pen_x+font->getGlyphBitmapSize().x+x, y-font->getGlyphBitmapSize().y), theTransformation);
                     unsigned int pos = (y * glyph_size.x + x) * 4;
 
@@ -72,4 +82,33 @@ void Text::drawCurrent(RenderSurface& theTarget, const Transformation& theTransf
             pen_x = pen_x + font->getGlyphAdvanceSize().x;
         }
     }
+}
+
+std::vector<uint32_t> Text::convertToUTF8(const std::string& theMSG) {
+    for(unsigned int i = 0; i < msg.size(); ) {
+        Size glyph_size;
+
+        //converting to utf-8
+        uint32_t utf8_char;
+        ssize_t skip = decode_utf8(&utf8_char,(uint8_t*)(&theMSG[i]));
+        if( skip <= 0 ) break;
+
+        msg.push_back(utf8_char);
+        i = i + skip;
+    }
+}
+
+void Text::calculateFixedWidth() {
+    if( fixed_width > 0 ) {
+        std::size_t temp_end_position = end_position+1; //past the last element
+        unsigned int temp_width = 0;
+        do {
+            temp_end_position--;
+            temp_width = getSizeByIndex(0, temp_end_position).x;
+        }while(temp_width > fixed_width || temp_end_position == 0);
+
+        end_position = temp_end_position;
+    }
+
+    else end_position = msg.size();
 }
