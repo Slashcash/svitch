@@ -9,6 +9,14 @@
 #include "logwriter.hpp"
 #include "svifile.hpp"
 
+#ifndef EMULATOR
+struct Account { //all the account on the system
+    std::string name;
+    std::string icon;
+    std::size_t icon_size;
+};
+#endif
+
 class SaveFile : public LogWriter {
     private:
         friend class SVIFile;
@@ -33,6 +41,7 @@ class SaveFile : public LogWriter {
         u128 user_id;
         std::string mount_name;
         std::string account_name;
+        static std::vector<Account> accounts; //all the accounts which at least have one save found on the system, gets filled after a succesful call of getAllSaveFiles
         #endif
         u64 title_id; //the title id for this savefile
         std::vector<std::string> title_names; //the game title for this savefile
@@ -75,9 +84,10 @@ class SaveFile : public LogWriter {
         #ifndef EMULATOR
         u128 getUserID() const { return user_id; }
         std::string getUserName() const { return account_name; }
+        static std::vector<Account> getAccounts() { return accounts; }
         #endif
 
-        static std::vector<SaveFile> getAllSaveFiles(); //gets all the savefiles found on the system
+        static std::vector<SaveFile> getAllSaveFiles(); //gets all the savefiles found on the system, theAccountBuffer gets filled with all the account on the system
         OPResult extractToSVIFile(const std::string& theSVIPath);
         OPResult importFromSVIFile(const SVIFile& theSVIFile);
 };

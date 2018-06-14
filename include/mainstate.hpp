@@ -13,19 +13,29 @@
 
 class MainState : public State, public LogWriter {
     private:
-        static const int FRAME_TO_FRAME_SPACING = 20;
-
         std::vector<SaveFile> savefiles; //all the savefiles in the system
+        #ifndef EMULATOR
+        std::vector<Account> system_accounts;
+        #endif
         unsigned int save_selected;
         unsigned int carousel_page;
+        unsigned int users_page;
 
         std::vector<Sprite> cover_arts;
-        std::vector<Text> names;
-        std::vector<Text> authors;
+        std::vector<Text> cover_names;
+        std::vector<Text> cover_authors;
+        std::vector<Sprite> user_arts;
+        std::vector<Text> user_names;
+        Sprite selector_sprite;
 
-        void buildCarousel();
+
         void buildScreen();
-        void buildPage(const unsigned int thePage);
+        void buildCarousel();
+        void buildUsers();
+        void buildSelector();
+        void setSelector(const unsigned int theSelection);
+        void buildCarouselPage(const unsigned int thePage);
+        void buildUsersPage(const unsigned int thePage);
 
         void changeSelected(unsigned int theSelection);
         std::string chooseExportFileName() const;

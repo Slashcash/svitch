@@ -18,6 +18,7 @@
 const std::string SaveFile::DEFAULT_SAVEPATH = "sdmc:/.saves/";
 #else
 const std::string SaveFile::DEFAULT_MOUNTNAME = "svitch_save";
+std::vector<Account> SaveFile::accounts;
 #endif
 const std::string SaveFile::DEFAULT_SAVEHEADER_NAME = "svitch_saveheader.svh";
 const std::string SaveFile::DEFAULT_ICON_NAME = "svitch_icon.jpeg";
@@ -60,9 +61,6 @@ void SaveFile::getSaveFileInformation() {
 
     NsApplicationControlData* buf = nullptr;
     size_t outsize=0;
-
-    char name[0x201];
-    char author[0x101];
 
     buf = new NsApplicationControlData;
     if( buf == nullptr ) { //if new fails for some reason
@@ -208,6 +206,7 @@ void SaveFile::getUserInformation() {
         OPResult op_res(ERR_GET_USER_PROFILE, R_DESCRIPTION(res));
         writeToLog(op_res, LogWriter::WARNING);
         account_name = UNKNOWN_PARAMETER_STR;
+        accountProfileClose(&profile);
         accountExit();
         return; //we have to return and this condition is not an error, just a warning
     }
@@ -216,6 +215,7 @@ void SaveFile::getUserInformation() {
         OPResult op_res(ERR_GET_USER_PROFILE, R_DESCRIPTION(res));
         writeToLog(op_res, LogWriter::WARNING);
         account_name = UNKNOWN_PARAMETER_STR;
+        accountProfileClose(&profile);
         accountExit();
         return; //we have to return and this condition is not an error, just a warning
     }
@@ -224,6 +224,48 @@ void SaveFile::getUserInformation() {
     strncpy(username, profilebase.username, sizeof(username)-1);//Even though profilebase.username usually has a NUL-terminator, don't assume it does for safety.
 
     account_name = username;
+
+    //if it is unique we add it to the account vector
+    bool found = false;
+    for(auto it = accounts.begin(); it < accounts.end(); it++)
+        if( it->name == account_name )
+            found = true;
+
+    if( !found ) {
+        Account temp_buffer;
+        std::size_t image_size;
+        std::size_t confirmed_image_size;
+        temp_buffer.name = account_name;
+
+        writeToLog("Loading the account icon");
+        res = accountProfileGetImageSize (&profile, &image_size);
+        if( R_FAILED(res) ) {
+            OPResult op_res(ERR_GET_USER_ICON, R_DESCRIPTION(res));
+            writeToLog(op_res, LogWriter::WARNING);
+            accountProfileClose(&profile);
+            accountExit();
+            return; //we have to return and this condition is not an error, just a warning
+        }
+
+        char* icon_buffer = new char[image_size];
+        res = accountProfileLoadImage (&profile, icon_buffer, image_size, &confirmed_image_size);
+        if( R_FAILED(res) ) {
+            OPResult op_res(ERR_GET_USER_ICON, R_DESCRIPTION(res));
+            writeToLog(op_res, LogWriter::WARNING);
+            accountProfileClose(&profile);
+            accountExit();
+            delete [] icon_buffer;
+            return; //we have to return and this condition is not an error, just a warning
+        }
+
+        temp_buffer.icon.append(icon_buffer, confirmed_image_size);
+        temp_buffer.icon_size = confirmed_image_size;
+        delete [] icon_buffer;
+        accounts.push_back(temp_buffer);
+    }
+
+    accountProfileClose(&profile);
+    accountExit();
     writeToLog("The account name is "+account_name);
 }
 #endif
