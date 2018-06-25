@@ -31,3 +31,19 @@ void Scene::update(const long unsigned theFrameElapsed) {
     for( auto it = layers.begin(); it < layers.end(); it++ )
         it->update(theFrameElapsed);
 }
+
+std::vector<Node*> Scene::getTouched(const InputEvent& theEvent) const {
+    std::vector<Node*> buffer;
+
+    if( theEvent.getInputType() == InputEvent::TOUCH_INPUT_PRESSED ) {
+        for( auto it = layers.begin(); it < layers.end(); it++ ) {
+            for( auto it2 = it->nodes.begin(); it2 < it->nodes.end(); it2++ ) {
+                std::vector<Node*> temp = (*it2)->beenTouched(theEvent.getTouchBound());
+                buffer.insert(buffer.end(), temp.begin(), temp.end());
+            }
+        }
+    }
+
+
+    return buffer;
+}

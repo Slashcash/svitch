@@ -11,6 +11,8 @@ void State::updateBase(const long unsigned int theElapsedFrame) {
                 emitSignal(it->second);
             }
         }
+
+        touched = scene.getTouched(buffer);
     }
 
     scene.update(theElapsedFrame);

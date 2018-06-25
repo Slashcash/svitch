@@ -1,5 +1,12 @@
 #include "node.hpp"
 
+bool Bound::intersects(const Bound& theBound) const {
+    if( top_left.x + size.x < theBound.top_left.x || theBound.top_left.x + theBound.size.x < top_left.x || top_left.y + size.y < theBound.size.y || theBound.top_left.y + theBound.size.y < top_left.y )
+        return false;
+
+    else return true;
+}
+
 Node::Node() : Transformation(), Drawable() {
     parent = nullptr;
     is_active = true;
@@ -78,4 +85,17 @@ void Node::addTransition(const long unsigned int theUpdateRate, std::queue<Trans
     buffer.transformation_queue = theTransformationQueue;
 
     transitions.push_back(buffer);
+}
+
+std::vector<Node*> Node::beenTouched(const Bound& theTouchPosition) {
+    std::vector<Node*> buffer;
+
+    //checking if the node itself has been touched
+    if( getGlobalBound().intersects(theTouchPosition) ) buffer.push_back(this);
+
+    //checking for its children
+    for( auto it = children.begin(); it < children.end(); it++ )
+        if( (*it)->getGlobalBound().intersects(theTouchPosition) ) buffer.push_back(*it);
+
+    return buffer;
 }

@@ -107,6 +107,9 @@ void Window::inputManagement(void* theParameter) {
     std::queue<InputEvent>* trd_input_queue = ((InputThreadParameter*)(theParameter))->thread_input_queue;
     Mutex* trd_input_mutex = ((InputThreadParameter*)(theParameter))->thread_input_mutex;
 
+    std::vector<touchPosition> prev_touch_positions;
+    std::vector<touchPosition> touch_positions;
+
     while( !trd_request_to_exit->load() ) { //waiting for an external request to exit
         //general hid scan
         hidScanInput();
@@ -135,15 +138,52 @@ void Window::inputManagement(void* theParameter) {
             //END OF CRITICAL
         }
 
-        //checking if there is an external request from the switch to close the app
-        /*if( !appletMainLoop() ) {
-            //CRITICAL
-            mutexLock(trd_input_mutex);
-            trd_input_queue->push(InputEvent(InputEvent::Type::WINDOW_CLOSE));
-            mutexUnlock(trd_input_mutex);
-            //END OF CRITICAL
-        }*/
+        //checking for touch inputs
+        touch_positions.clear();
+        u32 touch_count = hidTouchCount();
+        for(u32 i = 0; i < touch_count; i++) {
+            touchPosition buffer;
+            hidTouchRead(&buffer, i);
+            touch_positions.push_back(buffer);
+        }
 
+        //checking for touch pressed
+        bool found = false;
+        for(auto it = touch_positions.begin(); it < touch_positions.end(); it++) {
+            for( auto it2 = prev_touch_positions.begin(); it2 < prev_touch_positions.end(); it2++ ) {
+                if( it == it2 ) found = true;
+            }
+
+            if( !found ) {
+                //CRITICAL
+                mutexLock(trd_input_mutex);
+                InputEvent buffer(InputEvent::Type::TOUCH_INPUT_PRESSED);
+                buffer.setTouchBound(Bound(Coordinate(it->px, it->py), Size(it->dx, it->dy))); //REVIEW THIS LINE FOR MORE ACCURACY
+                trd_input_queue->push(buffer);
+                mutexUnlock(trd_input_mutex);
+                //END OF CRITICAL
+            }
+        }
+
+        //checking for touch released
+        found = false;
+        for(auto it = prev_touch_positions.begin(); it < prev_touch_positions.end(); it++) {
+            for( auto it2 = touch_positions.begin(); it2 < touch_positions.end(); it2++ ) {
+                if( it == it2 ) found = true;
+            }
+
+            if( !found ) {
+                //CRITICAL
+                mutexLock(trd_input_mutex);
+                InputEvent buffer(InputEvent::Type::TOUCH_INPUT_RELEASED);
+                buffer.setTouchBound(Bound(Coordinate(it->px, it->py), Size(it->dx, it->dy))); //REVIEW THIS LINE FOR MORE ACCURACY
+                trd_input_queue->push(buffer);
+                mutexUnlock(trd_input_mutex);
+                //END OF CRITICAL
+            }
+        }
+
+        prev_touch_positions = touch_positions;
         usleep(SLEEP_TIME*1000);
     }
 }

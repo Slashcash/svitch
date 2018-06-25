@@ -16,10 +16,12 @@ class Bound {
     public:
         Coordinate top_left;
         Size size;
-        bool is_active; //whether or not the node gets automatically updated
 
         Bound() { top_left = Coordinate(0, 0); size = Size(0, 0); }
         Bound(const Coordinate& theCoordinate, const Size& theSize) { top_left = theCoordinate; size = theSize; }
+
+        bool operator==(const Bound& theBound) const { return ((top_left == theBound.top_left) && (size == theBound.size));  }
+        bool intersects(const Bound& theBound) const;
 };
 
 class Node;
@@ -60,6 +62,7 @@ class Node : public Transformation, public Drawable {
         virtual Transformation getTotalTransformation() const final;
         virtual Coordinate getGlobalPosition() const final { return getTotalTransformation().getPosition(); }
         virtual void addTransition(const long unsigned int theUpdateRate, std::queue<Transformation> theTransformationQueue);
+        virtual std::vector<Node*> beenTouched(const Bound& theTouchPosition); //returns if this node or any of the children has been touched
 };
 
 #endif // _NODE_HPP_

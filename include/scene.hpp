@@ -6,6 +6,7 @@
 
 #include "node.hpp"
 #include "layer.hpp"
+#include "inputevent.hpp"
 
 /*a scene is just a vector of layers that can be drawn on a window*/
 
@@ -25,6 +26,7 @@ class Scene : public Node {
         void detachFromLayer(const Node* theNode, const unsigned int theLayerNum); //detaches a node from the specified layer
         virtual Size getSize() const { return scene_size; }
         void setSize(const Size& theSize) { scene_size = theSize;  }
+        std::vector<Node*> getTouched(const InputEvent& theEvent) const; //returns all the nodes that have been touched by theEvent
 };
 
 #endif // _SCENE_HPP_

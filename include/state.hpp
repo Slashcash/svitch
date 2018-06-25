@@ -24,6 +24,7 @@ class State : public Signaler, public Observer {
         std::vector<InputSignal> input_signals;
         static FontManager font_manager;
         static TextureManager texture_manager;
+        std::vector<Node*> touched; //all the touched node in the last frame
 
     public:
         State() { subscrive(this); request_to_exit = false; request_to_shutdown = false; }
