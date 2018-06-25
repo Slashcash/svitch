@@ -11,7 +11,7 @@
 #include "resultstate.hpp"
 #include "importstate.hpp"
 
-MainState::MainState() {
+MainState::MainState(const Size theSceneSize) : State(theSceneSize) {
     //variable initialization
     save_selected = 0;
 
@@ -163,7 +163,7 @@ void MainState::buildCarousel() {
         cover_authors.back().setFixedWidth(COVERART_WIDTH);
         cover_authors.back().setCharacterSize(CHAR_SIZE);
         cover_authors.back().setColor(CHAR_COLOR);
-        cover_authors.back().setPosition(-(cover_arts.back().getSize().x / 2) + LATERAL_SPACING, -(cover_arts.back().getSize().x / 2) - FRAME_TO_TEXT_SPACING);
+        cover_authors.back().setPosition(-cover_arts.back().getSize().x / 2 -cover_authors.back().getSize().x, -(cover_arts.back().getSize().y / 2) - FRAME_TO_TEXT_SPACING);
         cover_arts.back().attachChild(&cover_authors.back());
 
         cover_names.push_back(Text(font_manager.getResource(FONT), it->getBestSuitableName(Gui::getInstance()->getSystemLanguage())));
@@ -204,15 +204,15 @@ void MainState::buildCarouselPage(const unsigned int thePage) {
 }
 
 void MainState::buildUsers() {
-    const unsigned int BORDER_X_SPACE = 98;
+    const unsigned int BORDER_X_SPACE = 79;
     const unsigned int ELEMENT_PER_PAGE = 4;
-    const unsigned int FRAME_TO_FRAME_SPACING = 20;
-    const unsigned int BORDER_Y_SPACE = 100;
-    const unsigned int USERICON_WIDTH = 100;
-    const unsigned int USERICON_HEIGHT = 100;
-    const unsigned int FRAME_TO_TEXT_SPACING = 25;
-    const unsigned int LATERAL_SPACING = 0;
-    const unsigned int CHAR_SIZE = 10;
+    const unsigned int FRAME_TO_FRAME_SPACING = 55;
+    const unsigned int BORDER_Y_SPACE = 55;
+    const unsigned int USERICON_WIDTH = 70;
+    const unsigned int USERICON_HEIGHT = 70;
+    const unsigned int FRAME_TO_TEXT_SPACING = 7;
+    const unsigned int LATERAL_SPACING = -3;
+    const unsigned int CHAR_SIZE = 16;
     const Color CHAR_COLOR = Color::WHITE;
     const std::string FONT = FONT_PATH + "roboto.ttf";
 
@@ -231,17 +231,17 @@ void MainState::buildUsers() {
         user_arts.push_back(Sprite(temp_texture));
         user_arts.back().setOrigin(user_arts.back().getSize().x/2, user_arts.back().getSize().y/2);
         if( (i % ELEMENT_PER_PAGE) == 0 ) user_arts.back().setPosition(BORDER_X_SPACE + user_arts.back().getSize().x / 2, scene.getSize().y - user_arts.back().getSize().y / 2 - BORDER_Y_SPACE );
-        else user_arts.back().setPosition((user_arts.end()-2)->getPosition().x + (user_arts.end()-2)->getSize().x + FRAME_TO_FRAME_SPACING, scene.getSize().y /2);
+        else user_arts.back().setPosition((user_arts.end()-2)->getPosition().x + (user_arts.end()-2)->getSize().x + FRAME_TO_FRAME_SPACING, user_arts.end()-2)->getPosition().y);
 
-        float temp_scale_x = float(USERICON_WIDTH / cover_arts.back().getSize().x);
-        float temp_scale_y = float(USERICON_HEIGHT / cover_arts.back().getSize().y);
+        float temp_scale_x = float(USERICON_WIDTH / user_arts.back().getSize().x);
+        float temp_scale_y = float(USERICON_HEIGHT / user_arts.back().getSize().y);
         user_arts.back().setScale(temp_scale_x, temp_scale_y);
 
         user_names.push_back(Text(font_manager.getResource(FONT), it->name));
         user_names.back().setFixedWidth(USERICON_WIDTH);
         user_names.back().setCharacterSize(CHAR_SIZE);
         user_names.back().setColor(CHAR_COLOR);
-        user_names.back().setPosition(-(user_arts.back().getSize().x / 2) + LATERAL_SPACING, cover_arts.back().getSize().x / 2 + FRAME_TO_TEXT_SPACING);
+        user_names.back().setPosition(-(user_arts.back().getSize().x / 2) + LATERAL_SPACING, user_arts.back().getSize().y / 2 + FRAME_TO_TEXT_SPACING);
         user_arts.back().attachChild(&user_names.back());
 
         i++;
@@ -254,17 +254,17 @@ void MainState::buildUsers() {
         user_arts.push_back(Sprite(texture_manager.getResource(TEXTURE_PATH + "default_usericon.png")));
         user_arts.back().setOrigin(user_arts.back().getSize().x/2, user_arts.back().getSize().y/2);
         if( (i % ELEMENT_PER_PAGE) == 0 ) user_arts.back().setPosition(BORDER_X_SPACE + user_arts.back().getSize().x / 2, scene.getSize().y - user_arts.back().getSize().y / 2 - BORDER_Y_SPACE );
-        else user_arts.back().setPosition((user_arts.end()-2)->getPosition().x + (user_arts.end()-2)->getSize().x + FRAME_TO_FRAME_SPACING, scene.getSize().y /2);
+        else user_arts.back().setPosition((user_arts.end()-2)->getPosition().x + (user_arts.end()-2)->getSize().x + FRAME_TO_FRAME_SPACING, (user_arts.end()-2)->getPosition().y);
 
-        float temp_scale_x = float(USERICON_WIDTH / cover_arts.back().getSize().x);
-        float temp_scale_y = float(USERICON_HEIGHT / cover_arts.back().getSize().y);
+        float temp_scale_x = float(USERICON_WIDTH / user_arts.back().getSize().x);
+        float temp_scale_y = float(USERICON_HEIGHT / user_arts.back().getSize().y);
         user_arts.back().setScale(temp_scale_x, temp_scale_y);
 
-        user_names.push_back(Text(font_manager.getResource(FONT), "TEST USER"));
+        user_names.push_back(Text(font_manager.getResource(FONT), "Username"));
         user_names.back().setFixedWidth(USERICON_WIDTH);
         user_names.back().setCharacterSize(CHAR_SIZE);
         user_names.back().setColor(CHAR_COLOR);
-        user_names.back().setPosition(-(user_arts.back().getSize().x / 2) + LATERAL_SPACING, cover_arts.back().getSize().x / 2 + FRAME_TO_TEXT_SPACING);
+        user_names.back().setPosition(-(user_arts.back().getSize().x / 2) + LATERAL_SPACING, user_arts.back().getSize().y / 2 + user_names.back().getSize().y + FRAME_TO_TEXT_SPACING);
         user_arts.back().attachChild(&user_names.back());
     }
     #endif // EMULATOR
@@ -297,16 +297,13 @@ void MainState::buildUsersPage(const unsigned int thePage) {
 }
 
 void MainState::buildSelector() {
+    const int X_POSITION = 50;
+    const int Y_POSITION = 39;
+
     selector_sprite.setTexture(texture_manager.getResource(TEXTURE_PATH+"selector.png"));
-    setSelector(0);
+    selector_sprite.setOrigin(selector_sprite.getSize().x / 2, selector_sprite.getSize().y / 2);
+    selector_sprite.setPosition(X_POSITION + selector_sprite.getSize().x / 2, Y_POSITION + selector_sprite.getSize().y / 2);
     scene.addToLayer(&selector_sprite, 0);
-}
-
-void MainState::setSelector(const unsigned int theSelection) {
-    const int X_OFFSET = 0;
-    const int Y_OFFSET = 0;
-
-    selector_sprite.setPosition(cover_arts[theSelection].getPosition().x + X_OFFSET, cover_arts[theSelection].getPosition().y + Y_OFFSET);
 }
 
 void MainState::buildScreen() {

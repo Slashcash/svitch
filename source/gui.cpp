@@ -104,7 +104,7 @@ OPResult Gui::getSetLanguage() {
 
 void Gui::run() {
     //adding the first state
-    addState(new MainState());
+    addState(new MainState(Size(Window::getInstance()->getSize().x, Window::getInstance()->getSize().y - 91)));
 
     while( Window::getInstance()->isOpen() && !states.empty() ) {
         //updating
@@ -116,7 +116,7 @@ void Gui::run() {
 
         //drawing
         Window::getInstance()->clear();
-        Window::getInstance()->draw(background_sprite); //drawing the background
+        drawTopbar(); //drawing the topbar
         states.top()->drawBase(); //drawing the actual state
         Window::getInstance()->update();
     }
@@ -142,7 +142,11 @@ Gui* Gui::getInstance() {
 
 void Gui::addState(State* theState) {
     states.push(theState);
-    theState->scene.setSize(Size(Window::getInstance()->getSize().x, Window::getInstance()->getSize().y));
+    theState->scene.move(0, 91);
+}
+
+void Gui::drawTopbar() {
+    Window::getInstance()->draw(background_sprite); //drawing the background
 }
 
 void Gui::destroy() {

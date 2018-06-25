@@ -30,6 +30,8 @@ class Gui : public LogWriter {
         Texture background_texture;
         Sprite background_sprite; //the background
 
+        void drawTopbar();
+
         Gui();
 
         void dropState();

@@ -33,7 +33,6 @@ class MainState : public State, public LogWriter {
         void buildCarousel();
         void buildUsers();
         void buildSelector();
-        void setSelector(const unsigned int theSelection);
         void buildCarouselPage(const unsigned int thePage);
         void buildUsersPage(const unsigned int thePage);
 
@@ -41,7 +40,7 @@ class MainState : public State, public LogWriter {
         std::string chooseExportFileName() const;
 
     public:
-        MainState();
+        MainState(const Size theSceneSize);
 
         virtual void onNotify(const Signal& theSignal);
 };

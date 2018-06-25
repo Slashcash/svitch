@@ -27,6 +27,7 @@ class State : public Signaler, public Observer {
 
     public:
         State() { subscrive(this); request_to_exit = false; request_to_shutdown = false; }
+        State(const Size theSceneSize) : State() { scene.setSize(theSceneSize); }
 
         virtual void drawBase() const final { Window::getInstance()->draw(scene); draw(); }
         virtual void draw() const {} //override this if you need some additional drawing
