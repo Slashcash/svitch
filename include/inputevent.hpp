@@ -1,7 +1,9 @@
 #ifndef _INPUTEVENT_HPP_
 #define _INPUTEVENT_HPP_
 
-#include "switch/services/hid.h"
+#include <switch/services/hid.h>
+
+#include "node.hpp" //for the Bound class
 
 typedef HidControllerKeys Button; //all the nintendo switch analog buttons
 static const Button BUTTON_A = KEY_A;
@@ -35,20 +37,22 @@ enum Player {   //all the nintendo switch players
     PLAYER1 //just supporting player1 for now :(
 };
 
-
 class InputEvent {
     public:
         enum Type { //an input event can be of different types
             UNKNOWN,
             BUTTON_PRESSED,
             BUTTON_RELEASED,
-            WINDOW_CLOSE
+            WINDOW_CLOSE,
+            TOUCH_INPUT_PRESSED,
+            TOUCH_INPUT_RELEASED
         };
 
     private:
         Type input_type;                    //the type of input
         Button input_button;                //unknown if this event does not refer to a button
         Player input_player;                //the player which this event refers to, meaningless for some event types
+        Bound touch_bound;
 
     public:
         InputEvent(const Type& theEventType = UNKNOWN, const Button& theButton = BUTTON_A, const Player& thePlayer = Player::PLAYER1);
@@ -56,12 +60,14 @@ class InputEvent {
         Type getInputType() const { return input_type; } //ALWAYS CHECK THIS FIRST, IF THIS IS UNKNOWN OTHER FIELDS ARE MEANINGLESS
         Button getButton() const { return input_button; } //if the type regards a button, this will return the affected button
         Player getPlayer() const { return input_player; } //only meaningful for some kind of types
+        Bound getTouchBound() const { return touch_bound; }
 
         void setType(const Type& theType) { input_type = theType; }
         void setButton(const Button& theButton) { input_button = theButton; }
         void setPlayer(const Player& thePlayer) { input_player = thePlayer; }
+        void setTouchBound(const Bound& theTouchBound) { touch_bound = theTouchBound; }
 
-        bool operator==(const InputEvent& theEvent);
+        bool operator==(const InputEvent& theEvent) const;
 };
 
 #endif // _INPUTEVENT_HPP_
