@@ -123,14 +123,15 @@ std::string MainState::chooseExportFileName() const {
 void MainState::buildCarousel() {
     const unsigned int COVERART_WIDTH = 256;
     const unsigned int COVERART_HEIGHT = 256;
-    const std::string FONT = FONT_PATH + "roboto.ttf";
+    const std::string FONT = FONT_PATH + "NotoSansJP-Regular.otf";
     const unsigned int CHAR_SIZE = 15;
     const Color CHAR_COLOR = Color::WHITE;
     const unsigned int FRAME_TO_TEXT_SPACING = 25;
     const unsigned int TEXT_TO_TEXT_SPACING = 15;
     const int LATERAL_SPACING = 0;
     const unsigned int BORDER_SPACE = 98;
-    const unsigned int ELEMENT_PER_PAGE = 4;
+    const unsigned int Y_POSITION = 110;
+    //const unsigned int ELEMENT_PER_PAGE = 4;
     const unsigned int FRAME_TO_FRAME_SPACING = 20;
 
 //building the carousel
@@ -151,9 +152,9 @@ void MainState::buildCarousel() {
         if( temp_texture.getSize().x == 0 ) temp_texture = texture_manager.getResource(TEXTURE_PATH + "default_coverart.png"); //if we didn't find the cover art
 
         cover_arts.push_back(Sprite(temp_texture));
-        cover_arts.back().setOrigin(cover_arts.back().getSize().x/2, cover_arts.back().getSize().y/2);
-        if( (i % ELEMENT_PER_PAGE) == 0 ) cover_arts.back().setPosition(BORDER_SPACE + cover_arts.back().getSize().x / 2, scene.getSize().y /2 );
-        else cover_arts.back().setPosition((cover_arts.end()-2)->getPosition().x + (cover_arts.end()-2)->getSize().x + FRAME_TO_FRAME_SPACING, scene.getSize().y /2);
+        //cover_arts.back().setOrigin(cover_arts.back().getSize().x/2, cover_arts.back().getSize().y/2);
+        if( i == 0 ) cover_arts.back().setPosition(BORDER_SPACE, Y_POSITION );
+        else cover_arts.back().setPosition((cover_arts.end()-2)->getPosition().x + (cover_arts.end()-2)->getSize().x + FRAME_TO_FRAME_SPACING, Y_POSITION);
 
         float temp_scale_x = float(COVERART_WIDTH / cover_arts.back().getSize().x);
         float temp_scale_y = float(COVERART_HEIGHT / cover_arts.back().getSize().y);
@@ -214,7 +215,7 @@ void MainState::buildUsers() {
     const unsigned int LATERAL_SPACING = -3;
     const unsigned int CHAR_SIZE = 16;
     const Color CHAR_COLOR = Color::WHITE;
-    const std::string FONT = FONT_PATH + "roboto.ttf";
+    const std::string FONT = FONT_PATH + "NotoSansJP-Regular.otf";
 
     user_arts.clear();
     user_names.clear();
