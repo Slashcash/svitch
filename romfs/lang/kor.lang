@@ -1,0 +1,17 @@
+no_save=세이브 파일을 찾을 수 없음
+press_b_exit=B 버튼을 눌러 종료
+press_b_undo=B 버튼을 눌러 실행 취소
+press_x_import=SD 카드에서 저장을 가져오려면 X 버튼을 누름
+press_a_import=이 파일을 가져오려면 A 버튼을 누름
+press_arrow_scroll=+/- 버튼을 눌러 타이틀 스크롤
+press_arrow_scoll_file=+/-를 버튼을 눌러 파일 스크롤
+press_y_export=Y 버튼을 눌러 저장을 SD 카드로 내보냄
+press_a_continue=계속하려면 A를 누름
+extract_success=다음 위치에 성공적으로 추출 저장:
+extract_failed=다음 오류로 인해 추출 저장 실패:
+file_found=찾은 파일:
+importing_for=다음에 대한 저장을 가져오고 있음
+no_importing=다음에 대한 저장 파일이 아닌 것 같음
+importing_succesful=성공적으로 가져오기
+importing_failed=오류로 인해 가져오기 실패
+user=사용자
